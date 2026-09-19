@@ -107,8 +107,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 						<Mail size={48} className="text-indigo-400 mx-auto mb-4" />
 						<h3 className="text-white font-bold mb-2">Verifica tu email</h3>
 						<p className="text-slate-400 text-sm mb-4">
-							Hemos enviado un código de verificación a{" "}
-							<span className="text-indigo-400">{email}</span>
+							Hemos enviado un código de verificación a <span className="text-indigo-400">{email}</span>
 						</p>
 						<button
 							type="button"
@@ -179,10 +178,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 										Nombre
 									</label>
 									<div className="relative">
-										<User
-											size={16}
-											className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
-										/>
+										<User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
 										<input
 											type="text"
 											value={name}
@@ -199,10 +195,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									Email
 								</label>
 								<div className="relative">
-									<Mail
-										size={16}
-										className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
-									/>
+									<Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
 									<input
 										type="email"
 										value={email}
@@ -219,10 +212,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									Contraseña
 								</label>
 								<div className="relative">
-									<Lock
-										size={16}
-										className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"
-									/>
+									<Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
 									<input
 										type="password"
 										value={password}
@@ -264,9 +254,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									}}
 									className="text-slate-400 text-sm hover:text-indigo-400 transition"
 								>
-									{mode === "login"
-										? "¿No tienes cuenta? Regístrate"
-										: "¿Ya tienes cuenta? Inicia sesión"}
+									{mode === "login" ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión"}
 								</button>
 							</div>
 						</form>
@@ -282,9 +270,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 							</button>
 							{showSeed && (
 								<div className="mt-3 space-y-2">
-									<p className="text-[10px] text-slate-600 text-center mb-2">
-										Haz clic para autocompletar
-									</p>
+									<p className="text-[10px] text-slate-600 text-center mb-2">Haz clic para autocompletar</p>
 									{SEED_CREDENTIALS.map((seed) => (
 										<button
 											key={seed.email}
@@ -293,16 +279,10 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
 											className="w-full flex items-center justify-between px-3 py-2 bg-[#050811] border border-slate-800/50 rounded-lg hover:border-indigo-500/30 transition text-left"
 										>
 											<div>
-												<p className="text-xs text-slate-300 font-mono">
-													{seed.email}
-												</p>
-												<p className="text-[10px] text-slate-600">
-													{seed.role}
-												</p>
+												<p className="text-xs text-slate-300 font-mono">{seed.email}</p>
+												<p className="text-[10px] text-slate-600">{seed.role}</p>
 											</div>
-											<span className="text-[10px] text-slate-600 font-mono">
-												{seed.password}
-											</span>
+											<span className="text-[10px] text-slate-600 font-mono">{seed.password}</span>
 										</button>
 									))}
 								</div>

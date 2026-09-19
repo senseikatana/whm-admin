@@ -60,42 +60,27 @@ export async function handlePost(table: string, request: Request) {
 	}
 }
 
-function mapToSnakeCase(table: string, body: Record<string, any>): Record<string, any> {
-	const mapped: Record<string, any> = { ...body };
+function mapToSnakeCase(_table: string, body: Record<string, any>): Record<string, any> {
+	const {
+		minStock,
+		orderNumber,
+		customerName,
+		totalItems,
+		totalValue,
+		taskNumber,
+		assignedTo,
+		pickedItems,
+		...mapped
+	} = body;
 
-	// Common camelCase → snake_case mappings
-	if (mapped.minStock !== undefined) {
-		mapped.min_stock = mapped.minStock;
-		delete mapped.minStock;
-	}
-	if (mapped.orderNumber !== undefined) {
-		mapped.order_number = mapped.orderNumber;
-		delete mapped.orderNumber;
-	}
-	if (mapped.customerName !== undefined) {
-		mapped.customer_name = mapped.customerName;
-		delete mapped.customerName;
-	}
-	if (mapped.totalItems !== undefined) {
-		mapped.total_items = mapped.totalItems;
-		delete mapped.totalItems;
-	}
-	if (mapped.totalValue !== undefined) {
-		mapped.total_value = mapped.totalValue;
-		delete mapped.totalValue;
-	}
-	if (mapped.taskNumber !== undefined) {
-		mapped.task_number = mapped.taskNumber;
-		delete mapped.taskNumber;
-	}
-	if (mapped.assignedTo !== undefined) {
-		mapped.assigned_to = mapped.assignedTo;
-		delete mapped.assignedTo;
-	}
-	if (mapped.pickedItems !== undefined) {
-		mapped.picked_items = mapped.pickedItems;
-		delete mapped.pickedItems;
-	}
+	if (minStock !== undefined) mapped.min_stock = minStock;
+	if (orderNumber !== undefined) mapped.order_number = orderNumber;
+	if (customerName !== undefined) mapped.customer_name = customerName;
+	if (totalItems !== undefined) mapped.total_items = totalItems;
+	if (totalValue !== undefined) mapped.total_value = totalValue;
+	if (taskNumber !== undefined) mapped.task_number = taskNumber;
+	if (assignedTo !== undefined) mapped.assigned_to = assignedTo;
+	if (pickedItems !== undefined) mapped.picked_items = pickedItems;
 
 	return mapped;
 }

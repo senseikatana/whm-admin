@@ -31,5 +31,5 @@
 		".next/dev/types/**/*.ts",
 		"**/*.mts"
 	],
-	"exclude": ["node_modules", "whm-aimade.tsx", "cloudflare-worker"]
+	"exclude": ["node_modules", "cloudflare-worker"]
 }

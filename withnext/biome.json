@@ -22,7 +22,6 @@
 				"noStaticElementInteractions": "off",
 				"noSvgWithoutTitle": "warn",
 				"useAltText": "error",
-				"useButtonType": "off",
 				"useSemanticElements": "off",
 				"useAnchorContent": "error",
 				"useAriaActivedescendantWithTabindex": "error",

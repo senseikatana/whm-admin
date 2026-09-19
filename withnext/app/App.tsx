@@ -8,6 +8,7 @@ import {
 	Globe,
 	LayoutDashboard,
 	Loader2,
+	LogOut,
 	MessageCircle,
 	Mic,
 	Package,
@@ -17,7 +18,6 @@ import {
 	Users,
 	X,
 } from "lucide-react";
-import { LogOut } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import CrudView from "./components/CrudView";
 import DesktopDashboardView from "./components/DesktopDashboardView";
@@ -721,7 +721,7 @@ export default function App() {
 	};
 
 	// AI Lote mock generator
-	const handleInjectMock = async (entity: string, quantity: number = 1) => {
+	const handleInjectMock = async (entity: string, quantity = 1) => {
 		setLoading(true);
 		try {
 			const prompt = `Genera un array JSON de ${quantity} objetos para la tabla "${entity}".
@@ -920,9 +920,7 @@ export default function App() {
 
 					{/* User info + Logout */}
 					<div className="flex items-center gap-2">
-						<span className="text-xs text-slate-400 hidden md:inline">
-							{user?.email}
-						</span>
+						<span className="text-xs text-slate-400 hidden md:inline">{user?.email}</span>
 						<button
 							type="button"
 							onClick={logout}
