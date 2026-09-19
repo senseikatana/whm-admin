@@ -46,7 +46,7 @@ cd whm-withnext
 bun install
 
 # Configurar variables de entorno
-cp .env.local.example .env.local
+cp .env.example .env.local
 # Editar .env.local con tus credenciales de InsForge
 
 # Ejecutar en desarrollo
@@ -109,7 +109,7 @@ whm-withnext/
 │   │       ├── picking.ts
 │   │       └── staff.ts
 │   └── utils/                     # Utilidades
-│       ├── gemini-api.ts          # Helper para Gemini API
+│       ├── ai-api.ts              # Helper de IA (Gemini / DeepSeek)
 │       └── sku-generator.ts       # Generador de SKUs
 ├── migrations/                    # Migraciones de base de datos
 ├── public/                        # Assets estáticos
@@ -242,7 +242,7 @@ bun run deploy:full    # InsForge + Worker en paralelo
 
 ### ⚠️ Importante: NO usar domains attach
 
-El dominio `senseikatana.com` usa un Cloudflare Worker para routing (landing page en `/` + app en `/works/whm-withnext`). **NO ejecutar** estos comandos porque sobreescriben los registros DNS y rompen el Worker:
+La app se sirve en `https://whm.senseikatana.com` mediante el Cloudflare Worker `whm-withnext-proxy` (upstream `https://8cc79ec9.insforge.site`). **NO ejecutar** estos comandos porque sobreescriben los registros DNS y rompen el Worker:
 
 ```bash
 # ❌ NO USAR - Sobreescribe DNS del Worker

@@ -1,136 +1,59 @@
-# Cloudflare Worker — Proxy para subruta
+# Cloudflare Worker — Proxy de whm.senseikatana.com
 
-Este worker sirve el proyecto WarehouseFlow SGA desde `senseikatana.com/works/whm-withnext` en lugar de la raíz del dominio.
+Este worker sirve la app WarehouseFlow SGA en `https://whm.senseikatana.com` proxeando todo el tráfico al upstream de InsForge.
 
 ## Arquitectura
 
 ```
-senseikatana.com/works/whm-withnext/*
+whm.senseikatana.com/*
         │
         ▼
 ┌─────────────────────────┐
 │   Cloudflare Worker     │
-│   (whm-withnext-proxy)  │
-│                         │
-│  /works/whm-withnext    │
-│         ↓               │
-│  /  (upstream)          │
+│  (whm-withnext-proxy)   │
+│   proxy transparente    │
 └─────────────────────────┘
         │
         ▼
 ┌─────────────────────────┐
 │  8cc79ec9.insforge.site │
-│  (InsForge / Vercel)    │
 └─────────────────────────┘
 ```
+
+`worker.ts` no reescribe HTML ni quita prefijos: como usa un subdominio dedicado, la ruta se proxea tal cual. Solo reescribe los `Location` de los redirects para que apunten al subdominio.
 
 ## Archivos
 
 | Archivo | Descripción |
 |---------|-------------|
-| `worker.ts` | Proxy reverso tipado en TypeScript |
-| `wrangler.toml` | Configuración del Worker y rutas |
+| `worker.ts` | Proxy reverso (Fetch API) |
+| `wrangler.toml` | Configuración del Worker y la ruta |
 
-## Instalación paso a paso
+## Deploy
 
-### 1. Instalar Wrangler CLI
+Preferir los scripts de `withnext/` (desde su raíz):
 
 ```bash
-npm install -g wrangler
-# o
-bun add -g wrangler
+bun run worker:dev      # wrangler dev
+bun run worker:deploy   # wrangler deploy
+bun run worker:tail     # wrangler tail
 ```
 
-### 2. Login en Cloudflare
+O manualmente:
 
 ```bash
-wrangler login
-```
-
-### 3. Desplegar el Worker
-
-```bash
-cd cloudflare-worker
+cd withnext/cloudflare-worker
 wrangler deploy
 ```
 
-Esto creará el worker `whm-withnext-proxy` y configurará la ruta automáticamente.
-
-### 4. Verificar
+## Verificar
 
 ```bash
-# Debería devolver el HTML de la app
-curl -I https://senseikatana.com/works/whm-withnext
+curl -I https://whm.senseikatana.com
 ```
 
-## Configuración
+## Notas
 
-### `wrangler.toml`
-
-```toml
-name = "whm-withnext-proxy"
-main = "worker.ts"
-compatibility_date = "2024-01-01"
-
-routes = [
-  { pattern = "senseikatana.com/works/whm-withnext*", zone_name = "senseikatana.com" }
-]
-```
-
-### `worker.ts`
-
-El worker hace:
-
-1. **Intercepta** requests a `/works/whm-withnext/*`
-2. **Reescribe** la URL quitando el prefijo de subruta
-3. **Proxea** al upstream (`8cc79ec9.insforge.site`)
-4. **Reescribe** redirects y URLs en HTML para mantener la subruta
-
-## Tipado
-
-El worker está completamente tipado con TypeScript:
-
-- `Env` — Variables de entorno del Worker
-- `WorkerHandler` — Interfaz del handler con `fetch(request, env, ctx)`
-- `REDIRECT_STATUSES` — Array readonly de códigos de redirect
-- `rewriteRedirect(location, upstreamUrl, originalUrl)` — Función tipada
-
-## Limitaciones conocidas
-
-- **Assets de Next.js**: Las rutas de assets (`/_next/static/*`) se sirven desde la subruta correcta gracias al reescritor de HTML
-- **API routes**: Los fetches a `/api/*` se reescriben a `/works/whm-withnext/api/*`
-- **Client-side navigation**: Next.js usa `router.push()` que respeta el `basePath` configurado
-- **Imágenes en `/public`**: Se sirven desde `/works/whm-withnext/imagen.png`
-
-## Troubleshooting
-
-### Error 502 en el worker
-
-Verificar que el upstream esté activo:
-```bash
-curl -I https://8cc79ec9.insforge.site
-```
-
-### Assets no cargan (404)
-
-El worker reescribe las rutas de assets en el HTML. Si algo falla, revisar los logs:
-```bash
-wrangler tail
-```
-
-### Redirects incorrectos
-
-El worker reescribe los redirects del upstream para apuntar a la subruta. Si un redirect va a la raíz, revisar `rewriteRedirect()` en `worker.ts`.
-
-## Actualizar el Worker
-
-```bash
-cd cloudflare-worker
-wrangler deploy
-```
-
-## Eliminar el Worker
-
-```bash
-wrangler delete whm-withnext-proxy
-```
+- El upstream está en `worker.ts` (`UPSTREAM`) y debe coincidir con el dominio InsForge del proyecto `whm-withnext`.
+- NO ejecutar `insforge domains attach senseikatana.com` ni `insforge domains dns sync`: sobreescriben los registros DNS que necesita el Worker.
+- `bun run worker:delete` elimina el worker `whm-withnext-proxy`.

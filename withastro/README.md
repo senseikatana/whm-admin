@@ -30,7 +30,7 @@ An administrative warehouse management system (SGA / WMS) designed for **ESINSA*
 - **Framework**: [Astro 7](https://astro.build) (Hybrid Static + Server-side SSR adapters)
 - **UI Islands**: React 19 + Tailwind CSS v4 + DaisyUI + Zustand
 - **Content Management (CMS)**: [Keystatic CMS](https://keystatic.com) (Integrated via `@keystatic/astro` at `/keystatic`)
-- **ORM**: [Prisma 6](https://www.prisma.io) (PostgreSQL schema, migrations, automated types)
+- **ORM**: [Prisma](https://www.prisma.io) (schema + seed; vestigial — the dashboard persists to InsForge, see `AGENTS.md`)
 - **Database & BaaS**: [InsForge](https://insforge.dev) (PostgreSQL, Auth, Realtime, Storage)
 - **Toolkit & Hexagonal Architecture**: [`katanakit-js`](https://www.npmjs.com/package/katanakit-js)
 - **AI Engine**: MiMo v2.5 / DeepSeek via OpenAI-compatible endpoint
@@ -54,10 +54,10 @@ The application follows a dual architectural paradigm designed to replace the le
 
 ## 🗄️ Database & ORM (Prisma + InsForge)
 
-Prisma acts as the ORM layer, agnostic of the database provider (configured for InsForge PostgreSQL):
-- **Schema**: `prisma/schema.prisma` (Warehouses, zones, locations, inventory items with NUT codes, in/out orders, routes, CRM).
-- **Client**: `src/lib/prisma.ts` (Lightweight singleton for API routes and SSR data access).
-- **Seed**: `prisma/seed.ts` (`bun run prisma:seed`) and `src/data/seed.ts` (Development dataset for all 6 collections).
+Prisma is configured but effectively unused by the dashboard, which persists JSON documents to the InsForge `wms_docs` table:
+- **Schema**: `prisma/schema.prisma` (legacy warehouses/zones/locations model).
+- **Client**: `src/lib/prisma.ts` (singleton, currently unimported).
+- **Seed**: `prisma/seed.ts` (`bun run prisma:seed`) and `src/data/seed.ts` (development dataset).
 
 ---
 
@@ -132,9 +132,9 @@ Access the CMS anytime at `/keystatic`.
 ## 🧪 Quality & Verification Commands
 
 ```bash
-bun run check        # Astro & TypeScript typecheck
-bun run lint         # Prettier & ESLint audit
-bun test             # Unit & integration tests
+bun run check        # Astro & TypeScript typecheck (frontend)
+bun run check:server # Typecheck del backend de mensajería
+bun test             # bun:test (src/i18n/tests/i18n.test.ts)
 bun run build        # Production static/hybrid build
 ```
 

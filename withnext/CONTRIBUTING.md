@@ -23,7 +23,7 @@ npx @insforge/cli login
 npx @insforge/cli link --project-id <project-id>
 
 # 4. Crear .env.local
-cp .env.local.example .env.local
+cp .env.example .env.local
 # Editar con las credenciales de InsForge
 
 # 5. Ejecutar en desarrollo

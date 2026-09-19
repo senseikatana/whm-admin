@@ -10,7 +10,7 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 
 ## Commands
 
-- `bun run check` — typecheck frontend (`astro check`); fix before pushing.
+- `bun run check` — typecheck frontend (`astro check`); fix before pushing. It currently reports 2 errors from `prisma/seed.ts` and `src/lib/prisma.ts`: `@prisma/client` is v7 but the installed `prisma` CLI is the v8 RC Platform CLI, which no longer registers `generate`. Prisma is unused by the dashboard, so this is expected until Prisma is removed or the CLI is aligned.
 - `bun run check:server` — typecheck backend (`tsc -p server/tsconfig.json`).
 - `bun run dev:server` — backend de mensajería en `http://localhost:8787`.
 - `bun run build` — production build.
@@ -25,15 +25,16 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 - Users reference roles by id in the `role` field; `LoginScreen` maps them with `resolveRoleId()`. Seeded roles (`admin`, `manager`, `picker`, `formador`, `practicas`) are merged into an existing DB without deleting custom users.
 - `src/data/localStore.ts` uses `SEED_VERSION` (`whm.seed.version`) to run one-time seed merges when the seed data set changes; bump it to force a re-seed of missing rows.
 
-## Authentication (Supabase Auth)
+## Authentication (InsForge Auth)
 
-- `src/hooks/useAuth.ts` returns `authMode` (`supabase` | `demo`). Supabase mode activates when `PUBLIC_SUPABASE_URL` + `PUBLIC_SUPABASE_ANON_KEY` are present; otherwise the app falls back to local demo operators (IndexedDB).
-- `src/lib/supabase.ts` — browser client singleton, `getSessionToken()`, `signUp()` (registration with role in `user_metadata`), `fetchProfile()`.
-- Role resolution (`fetchProfile`) reads `user_metadata.name` / `user_metadata.role_id` FIRST, falling back to the `profiles` table when it exists. This means the app works with zero Postgres setup (registration + seed only need the REST API). Unknown role ids fall back to `picker`.
-- `LoginScreen` renders email/password with a "Sign up" toggle (email + password + name + role selector — ALL roles are selectable by design, including admin; privilege-escalation risk, OK for an internal panel). `signInWithPassword` reports errors via `invalidCredentials`; registration reports the raw Supabase error and `needsConfirmation` when the project has *Confirm email* enabled (session is null after signUp).
+- `src/hooks/useAuth.ts` returns `authMode` (`insforge` | `demo`). InsForge mode activates when `PUBLIC_INSFORGE_URL` + `PUBLIC_INSFORGE_ANON_KEY` are present; otherwise the app falls back to local demo operators persisted in localStorage (`src/lib/operator.ts`).
+- `src/lib/insforge.ts` — browser client singleton: `getInsForge()`, `isInsForgeConfigured()`.
+- Session resolution (`resolveSession`) reads `user_metadata.name` / `user_metadata.role_id` FIRST, falling back to the `profiles` table via `auth.getProfile()` when it exists. The app works with zero Postgres setup; unknown role ids fall back to `picker` via `resolveRoleId()`.
+- `register()` calls `auth.signUp()` and then `auth.setProfile({ name, role_id })`; `needsConfirmation` mirrors `requireEmailVerification`. `signInWithPassword()` writes the `sga_session` cookie that `src/middleware.ts` checks, but the middleware only verifies cookie presence, not validity.
+- `LoginScreen` shows email/password with a "Sign up" toggle (name + role selector — ALL roles selectable by design, including admin; privilege-escalation risk accepted for an internal panel).
 - Messaging/Kitt clients attach the JWT automatically: `src/lib/messaging.ts` and `src/lib/kit.ts` send `Authorization: Bearer`; `useMessaging` passes the token to SSE as `?token=` (EventSource can't set headers).
-- `server/auth.ts` — Express middleware `requireAuth`. Enabled only when `SUPABASE_JWKS_URL` is set (validates against the project JWKS via `jose`); without it all routes stay open for local dev. Protected routes are listed with `auth: true` in `ENDPOINTS` in `server/index.ts`. The Meta webhook, `/api/health`, and the manifest `/api` stay public.
-- `scripts/seed-supabase.ts` (`bun run seed:supabase`) is REST-only: creates/updates users via the admin API writing `name`/`role_id` to `user_metadata`. Seeds the 5 role users (`<role_id>@warehouse.local`, password `Cambiame123!` / `SEED_USER_PASSWORD`) plus demo access `admin@admin.com` / `admin12345678` and `picker@demo.com` / `admin12345678` (all `email_confirm: true`). `profiles` sync to Postgres is optional and skipped with a warning if `DATABASE_URL` is missing/broken.
+- `server/auth.ts` — Express middleware `requireAuth`. Enabled only when `SUPABASE_JWKS_URL` is set (validates the project JWKS via `jose`); without it all routes stay open for local dev. Protected routes are listed with `auth: true` in `ENDPOINTS` in `server/index.ts`.
+- Stale references to remove on sight: `PUBLIC_SUPABASE_URL`, `src/lib/supabase.ts`, `scripts/seed-supabase.ts` and `bun run seed:supabase` no longer exist.
 
 ## Project structure
 

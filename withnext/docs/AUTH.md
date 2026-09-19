@@ -60,7 +60,7 @@ import insforge from "./lib/insforge";
 // Login con Google
 const { data, error } = await insforge.auth.signInWithOAuth({
   provider: "google",
-  redirectTo: "https://senseikatana.com/works/whm-withnext"
+  redirectTo: "https://whm.senseikatana.com"
 });
 ```
 
