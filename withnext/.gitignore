@@ -6,7 +6,7 @@
 .pnp.*
 .yarn/*
 .zcode/
-.atl
+.atl/
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
@@ -20,6 +20,7 @@ firebase-debug.log
 # next.js
 /.next/
 /out/
+.wrangler/
 
 # production
 /build

@@ -1,0 +1,43 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Dependencies / build (defensive at repo root; each stack has its own .gitignore)
+node_modules/
+dist/
+build/
+coverage/
+.next/
+.astro/
+.wrangler/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# AI agent / tooling folders
+.atl/
+.agents/
+.agent/
+.augment/
+.claude/
+.cline/
+.codex/
+.continue/
+.cursor/
+.devin/
+.gemini/
+.kilocode/
+.opencode/
+.qoder/
+.qwen/
+.roo/
+.specstory/
+.trae/
+.windsurf/
+.aider*
+.github/copilot*

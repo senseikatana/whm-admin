@@ -3,7 +3,7 @@ node_modules/
 .pnpm-store/
 .yarn/
 bun.lockb
-bun.lock 
+package-lock.json
 # Carpetas y archivos ocultos del sistema
 .*
 !.gitignore
