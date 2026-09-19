@@ -223,9 +223,14 @@ npx -y @insforge/cli@latest secrets get API_KEY
 ### Flujo
 
 ```
-Push a main → GitHub Actions → Lint + Build → Deploy InsForge + Worker
-Push a dev  → GitHub Actions → Lint + Build (sin deploy)
-PR          → GitHub Actions → Lint + Build (sin deploy)
+Push / PR        → GitHub Actions → Lint + Build (sin deploy)
+Manual dispatch  → GitHub Actions → Lint + Build → Deploy InsForge + Worker
+```
+
+Los deploys automáticos quedaron deshabilitados hasta que el repo tenga los secrets `INSFORGE_ACCESS_TOKEN` y `CLOUDFLARE_API_TOKEN`. Por ahora se lanzan a mano:
+
+```bash
+gh workflow run deploy.yml -R senseikatana/whm-admin
 ```
 
 ## Despliegue

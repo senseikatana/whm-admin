@@ -5,6 +5,10 @@ on:
     branches: [main, dev]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    # Los deploys corren solo a mano hasta que existan los secrets
+    # INSFORGE_ACCESS_TOKEN y CLOUDFLARE_API_TOKEN en el repo.
+    # Lanzar con: gh workflow run deploy.yml
 
 env:
   NODE_VERSION: "20"
@@ -40,7 +44,7 @@ jobs:
   deploy-insforge:
     name: Deploy to InsForge
     needs: quality
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -70,7 +74,7 @@ jobs:
   deploy-worker:
     name: Deploy Cloudflare Worker
     needs: quality
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     defaults:
       run:

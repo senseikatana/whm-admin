@@ -26,7 +26,7 @@ Monorepo with two parallel SGA/WMS implementations. Read the per-stack `AGENTS.m
 
 ## Gotchas
 
-- CI lives at the repo root: `.github/workflows/deploy.yml`. GitHub only reads workflows from the root, and the jobs use `working-directory: withnext`. Push to `main` deploys InsForge + Worker; `dev` and PRs run quality only.
+- CI lives at the repo root: `.github/workflows/deploy.yml`. GitHub only reads workflows from the root, and the jobs use `working-directory: withnext`. Push/PR run the quality job only; deploys are manual (`gh workflow run deploy.yml`) until `INSFORGE_ACCESS_TOKEN` and `CLOUDFLARE_API_TOKEN` are provisioned as repo secrets.
 - `withnext` runs Next.js 16.2 + React 19.2 with APIs that differ from older releases. After `bun install`, read `withnext/node_modules/next/dist/docs/` before writing framework code and heed deprecation notices.
 - `withastro` always attaches an adapter. `ASTRO_ADAPTER` selects `netlify | vercel | cloudflare | node`; unset defaults to `node` (standalone), not a fully static build, even though `withastro/AGENTS.md` and `DEPLOY.md` hints say otherwise. Netlify sets it in `netlify.toml`.
 - Never run `insforge domains attach senseikatana.com` or `insforge domains dns sync` — it overwrites the records the Cloudflare Worker needs. App URL is `https://whm.senseikatana.com` (worker `whm-withnext-proxy`, upstream `https://8cc79ec9.insforge.site`).
