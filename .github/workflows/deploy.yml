@@ -14,6 +14,9 @@ jobs:
   quality:
     name: Lint & Build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: withnext
     steps:
       - uses: actions/checkout@v4
 
@@ -39,6 +42,9 @@ jobs:
     needs: quality
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: withnext
     steps:
       - uses: actions/checkout@v4
 
@@ -74,5 +80,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          workingDirectory: cloudflare-worker
+          workingDirectory: withnext/cloudflare-worker
           command: deploy
