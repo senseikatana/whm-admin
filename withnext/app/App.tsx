@@ -35,298 +35,48 @@ import {
 	normalizeOrder,
 	normalizePicking,
 	normalizeProduct,
+	normalizeStaff,
 } from "./lib/normalize";
+import { SEED_CUSTOMERS, SEED_ORDERS, SEED_PICKING, SEED_PRODUCTS, SEED_STAFF } from "./lib/seeds";
 
-// initial mock/fallback data matching backend seed database
-const INITIAL_PRODUCTS = [
-	{
-		id: 1,
-		sku: "SKU-001",
-		name: "Palet Europeo 120x80",
-		category: "Palets",
-		stock: 450,
-		minStock: 100,
-		location: "A-01-01",
-		price: 12.5,
-	},
-	{
-		id: 2,
-		sku: "SKU-002",
-		name: "Caja Cartón 60x40x40",
-		category: "Embalaje",
-		stock: 2500,
-		minStock: 500,
-		location: "A-02-03",
-		price: 1.2,
-	},
-	{
-		id: 3,
-		sku: "SKU-003",
-		name: "Film Estirable 500mm",
-		category: "Embalaje",
-		stock: 180,
-		minStock: 50,
-		location: "B-05-02",
-		price: 18.9,
-	},
-	{
-		id: 4,
-		sku: "SKU-004",
-		name: "Etiquetas Térmicas 100x150",
-		category: "Etiquetado",
-		stock: 95,
-		minStock: 30,
-		location: "B-03-01",
-		price: 25.0,
-	},
-	{
-		id: 5,
-		sku: "SKU-005",
-		name: "Cinta Adhesiva 50mm",
-		category: "Embalaje",
-		stock: 8,
-		minStock: 20,
-		location: "A-04-02",
-		price: 2.5,
-	},
-	{
-		id: 6,
-		sku: "SKU-006",
-		name: "Transpaleta Manual 2500kg",
-		category: "Equipamiento",
-		stock: 12,
-		minStock: 5,
-		location: "C-01-01",
-		price: 285.0,
-	},
-	{
-		id: 8,
-		sku: "SKU-008",
-		name: "Contenedor Plástico 60L",
-		category: "Almacenaje",
-		stock: 320,
-		minStock: 100,
-		location: "B-08-03",
-		price: 15.5,
-	},
-	{
-		id: 9,
-		sku: "SKU-009",
-		name: "Guantes Trabajo Talla L",
-		category: "EPI",
-		stock: 145,
-		minStock: 50,
-		location: "A-06-04",
-		price: 28.0,
-	},
-	{
-		id: 11,
-		sku: "SKU-011",
-		name: "Scanner Código Barras",
-		category: "Tecnología",
-		stock: 25,
-		minStock: 10,
-		location: "C-05-02",
-		price: 85.0,
-	},
-	{
-		id: 12,
-		sku: "SKU-012",
-		name: "PDA Industrial Zebra",
-		category: "Tecnología",
-		stock: 18,
-		minStock: 8,
-		location: "C-05-03",
-		price: 1250.0,
-	},
+// initial mock/fallback data derived from the canonical seed datasets in
+// app/lib/seeds/* (kept in sync with the InsForge tables through migrations)
+const PRODUCT_CATEGORIES: string[] = [
+	"Espirometálicas",
+	"Grafito Puro",
+	"PTFE Fluoropolímero",
+	"Kammprofile",
+	"RTJ Metálica",
+	"Tornillería B7/2H",
+	"Tornillería Inox",
+	"Tuercas 2H/8M",
+	"Cobre Industrial",
+	"Materia Prima Corte",
+	"Seguridad Industrial",
+	"EPI",
+	"Palets",
+	"Embalaje",
+	"Etiquetado",
+	"Equipamiento",
+	"Almacenaje",
+	"Tecnología",
 ];
 
-const INITIAL_CUSTOMERS = [
-	{
-		id: 1,
-		code: "CUST001",
-		name: "Mercadona S.A.",
-		type: "Cliente",
-		email: "pedidos@mercadona.es",
-		phone: "+34 900 123 456",
-		status: "Activo",
-	},
-	{
-		id: 2,
-		code: "CUST002",
-		name: "Carrefour España",
-		type: "Cliente",
-		email: "compras@carrefour.es",
-		phone: "+34 900 234 567",
-		status: "Activo",
-	},
-	{
-		id: 3,
-		code: "CUST003",
-		name: "El Corte Inglés",
-		type: "Cliente",
-		email: "logistica@elcorteingles.es",
-		phone: "+34 900 345 678",
-		status: "Activo",
-	},
-	{
-		id: 4,
-		code: "SUPP001",
-		name: "Distribuciones García SL",
-		type: "Proveedor",
-		email: "ventas@distgarcia.com",
-		phone: "+34 963 123 456",
-		status: "Activo",
-	},
-	{
-		id: 5,
-		code: "SUPP002",
-		name: "Logística Martínez",
-		type: "Proveedor",
-		email: "info@logmartinez.es",
-		phone: "+34 932 234 567",
-		status: "Activo",
-	},
-];
-
-const INITIAL_ORDERS = [
-	{
-		id: 1,
-		orderNumber: "PED-2026-001",
-		customerName: "Mercadona S.A.",
-		status: "Pendiente",
-		priority: "high",
-		totalItems: 3,
-		totalValue: 1850.5,
-	},
-	{
-		id: 2,
-		orderNumber: "PED-2026-002",
-		customerName: "Carrefour España",
-		status: "Picking",
-		priority: "normal",
-		totalItems: 5,
-		totalValue: 3250.0,
-	},
-	{
-		id: 3,
-		orderNumber: "PED-2026-003",
-		customerName: "El Corte Inglés",
-		status: "Pendiente",
-		priority: "normal",
-		totalItems: 2,
-		totalValue: 890.0,
-	},
-	{
-		id: 4,
-		orderNumber: "PED-2026-004",
-		customerName: "Mercadona S.A.",
-		status: "Packing",
-		priority: "high",
-		totalItems: 4,
-		totalValue: 2100.0,
-	},
-	{
-		id: 5,
-		orderNumber: "PED-2026-005",
-		customerName: "Carrefour España",
-		status: "Despachado",
-		priority: "normal",
-		totalItems: 6,
-		totalValue: 4500.0,
-	},
-	{
-		id: 6,
-		orderNumber: "PED-2026-006",
-		customerName: "El Corte Inglés",
-		status: "Pendiente",
-		priority: "high",
-		totalItems: 8,
-		totalValue: 6750.0,
-	},
-	{
-		id: 7,
-		orderNumber: "REC-2026-001",
-		customerName: "Distribuciones García SL",
-		status: "Pendiente",
-		priority: "normal",
-		totalItems: 12,
-		totalValue: 1450.0,
-	},
-	{
-		id: 8,
-		orderNumber: "REC-2026-002",
-		customerName: "Logística Martínez",
-		status: "Completado",
-		priority: "normal",
-		totalItems: 24,
-		totalValue: 3800.0,
-	},
-];
-
-const INITIAL_PICKING = [
-	{
-		id: 1,
-		taskNumber: "PICK-001",
-		orderNumber: "PED-2026-001",
-		assignedTo: "Carlos Ruiz",
-		zone: "A",
-		status: "Pendiente",
-		totalItems: 3,
-		pickedItems: 0,
-	},
-	{
-		id: 2,
-		taskNumber: "PICK-002",
-		orderNumber: "PED-2026-002",
-		assignedTo: "María López",
-		zone: "B",
-		status: "En Proceso",
-		totalItems: 5,
-		pickedItems: 2,
-	},
-	{
-		id: 3,
-		taskNumber: "PICK-003",
-		orderNumber: "PED-2026-003",
-		assignedTo: "Carlos Ruiz",
-		zone: "C",
-		status: "Pendiente",
-		totalItems: 2,
-		pickedItems: 0,
-	},
-];
-
-const INITIAL_STAFF = [
-	{
-		id: 1,
-		name: "Juan García",
-		role: "Administrador",
-		status: "Activo",
-		zone: "Oficina",
-	},
-	{
-		id: 2,
-		name: "María López",
-		role: "Operario",
-		status: "En Ruta",
-		zone: "Zona B",
-	},
-	{
-		id: 3,
-		name: "Carlos Ruiz",
-		role: "Operario",
-		status: "Activo",
-		zone: "Zona A",
-	},
-	{
-		id: 4,
-		name: "Ana Martínez",
-		role: "Operario",
-		status: "Inactivo",
-		zone: "Zona C",
-	},
-];
+const INITIAL_PRODUCTS = SEED_PRODUCTS.map((product, index) =>
+	normalizeProduct({ id: index + 1, ...product }),
+);
+const INITIAL_CUSTOMERS = SEED_CUSTOMERS.map((customer, index) =>
+	normalizeCustomer({ id: index + 1, ...customer }),
+);
+const INITIAL_ORDERS = SEED_ORDERS.map((order, index) =>
+	normalizeOrder({ id: index + 1, ...order }),
+);
+const INITIAL_PICKING = SEED_PICKING.map((task, index) =>
+	normalizePicking({ id: index + 1, ...task }),
+);
+const INITIAL_STAFF = SEED_STAFF.map((member, index) =>
+	normalizeStaff({ id: index + 1, ...member }),
+);
 
 const INITIAL_WHATSAPP = [
 	{
@@ -598,16 +348,9 @@ export default function App() {
 		loadData();
 	}, [loadData]);
 
-	// Filter outOrders (client type or order status) and inOrders (supplier type)
+	// Inbound = recepciones (REC-*); everything else is an outbound pedido.
 	const filteredInOrders = useMemo(() => {
-		return dbState.orders.filter(
-			(o: any) =>
-				o.orderNumber?.startsWith("REC") ||
-				o.customerName?.toLowerCase().includes("garcía") ||
-				o.customerName?.toLowerCase().includes("martínez") ||
-				o.customerName?.toLowerCase().includes("distribuciones") ||
-				o.customerName?.toLowerCase().includes("logística"),
-		);
+		return dbState.orders.filter((o: any) => o.orderNumber?.startsWith("REC"));
 	}, [dbState.orders]);
 
 	const filteredOutOrders = useMemo(() => {
@@ -753,9 +496,7 @@ export default function App() {
 						{
 							sku: `SKU-${randomNum}`,
 							name: `Caja SKU-${randomNum} Premium`,
-							category: ["Embalaje", "Palets", "EPI", "Tecnología", "Almacenaje"][
-								Math.floor(Math.random() * 5)
-							],
+							category: PRODUCT_CATEGORIES[Math.floor(Math.random() * PRODUCT_CATEGORIES.length)],
 							stock: Math.floor(Math.random() * 500),
 							minStock: 20,
 							location: `B-0${Math.floor(1 + Math.random() * 8)}-0${Math.floor(1 + Math.random() * 5)}`,
@@ -1077,16 +818,7 @@ export default function App() {
 									key: "category",
 									label: "Categoría",
 									type: "select",
-									options: [
-										"Palets",
-										"Embalaje",
-										"Etiquetado",
-										"Equipamiento",
-										"Almacenaje",
-										"EPI",
-										"Tecnología",
-										"Herramientas",
-									],
+									options: PRODUCT_CATEGORIES,
 								},
 								{ key: "stock", label: "Stock Actual", type: "number" },
 								{ key: "minStock", label: "Stock Mínimo", type: "number" },
@@ -1120,7 +852,7 @@ export default function App() {
 									key: "status",
 									label: "Estado",
 									type: "select",
-									options: ["Pendiente", "Control de Calidad", "Completado"],
+									options: ["Pendiente", "Control de Calidad", "Recibido", "Completado", "Cancelado"],
 								},
 								{
 									key: "totalItems",
@@ -1152,7 +884,7 @@ export default function App() {
 									key: "status",
 									label: "Estado",
 									type: "select",
-									options: ["Pendiente", "Picking", "Packing", "Despachado", "Completado"],
+									options: ["Pendiente", "Picking", "Packing", "Despachado", "Completado", "Cancelado"],
 								},
 								{
 									key: "totalItems",
@@ -1186,7 +918,7 @@ export default function App() {
 									key: "role",
 									label: "Rol",
 									type: "select",
-									options: ["Administrador", "Operario", "Supervisor"],
+									options: ["Administrador", "Supervisor", "Operario", "Picker", "Mantenimiento"],
 								},
 								{ key: "zone", label: "Zona Asignada", type: "text" },
 								{
