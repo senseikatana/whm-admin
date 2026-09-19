@@ -26,6 +26,7 @@ coverage/
 .augment/
 .claude/
 .cline/
+.codegraph/
 .codex/
 .continue/
 .cursor/
