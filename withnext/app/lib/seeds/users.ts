@@ -78,6 +78,30 @@ export const SEED_USER_PROFILES: Omit<UserProfile, "id" | "created_at" | "update
 		phone: "+34 600 000 008",
 		is_active: false,
 	},
+	{
+		email: "jefa.turno@esinsa.com",
+		name: "Natalia Romero",
+		role: "manager",
+		zone: "Zona D",
+		phone: "+34 600 000 009",
+		is_active: true,
+	},
+	{
+		email: "supervisor2@esinsa.com",
+		name: "Diego Navarro",
+		role: "supervisor",
+		zone: "Zona C",
+		phone: "+34 600 000 010",
+		is_active: true,
+	},
+	{
+		email: "picker3@esinsa.com",
+		name: "Sara Iglesias",
+		role: "picker",
+		zone: "Zona C",
+		phone: "+34 600 000 011",
+		is_active: true,
+	},
 ];
 
 /**

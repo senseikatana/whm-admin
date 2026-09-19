@@ -4,8 +4,18 @@ import { seedData } from './seed';
 import type { AppStore } from './store';
 
 const COLLECTION_STORE = 'collections';
-const SEED_VERSION = '3';
+const SEED_VERSION = '4';
 const SEED_VERSION_KEY = 'whm.seed.version';
+
+/** Natural key used to merge newly seeded rows without duplicating existing ones. */
+const SEED_MERGE_KEYS: Record<CollectionKey, string> = {
+	inventory: 'sku',
+	inOrders: 'orderRef',
+	outOrders: 'orderRef',
+	routes: 'routeId',
+	crm: 'code',
+	users: 'code',
+};
 
 type Listener = (docs: Doc[]) => void;
 
@@ -49,16 +59,22 @@ class LocalStore implements AppStore {
 		}
 
 		if (localStorage.getItem(SEED_VERSION_KEY) !== SEED_VERSION) {
-			await this.mergeSeedUsers();
+			await this.mergeSeedRows();
 			localStorage.setItem(SEED_VERSION_KEY, SEED_VERSION);
 		}
 	}
 
-	private async mergeSeedUsers(): Promise<void> {
-		const col = 'users';
+	private async mergeSeedRows(): Promise<void> {
+		for (const col of Object.keys(seedData) as CollectionKey[]) {
+			await this.mergeCollection(col);
+		}
+	}
+
+	private async mergeCollection(col: CollectionKey): Promise<void> {
+		const key = SEED_MERGE_KEYS[col];
 		const existing = (await idbGet<Doc[]>(COLLECTION_STORE, col)) ?? [];
-		const existingCodes = new Set(existing.map((doc) => doc.code));
-		const missing = seedData[col].filter((row) => !existingCodes.has(String(row.code)));
+		const existingKeys = new Set(existing.map((doc) => String(doc[key])));
+		const missing = seedData[col].filter((row) => !existingKeys.has(String(row[key])));
 		if (missing.length === 0) return;
 		const rows = missing.map((row) => ({ id: this.newId(), ...row, createdAt: Date.now() }));
 		const merged = [...existing, ...rows];
