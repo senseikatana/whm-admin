@@ -112,7 +112,7 @@ const INITIAL_SAP_LOGS = [
 	{
 		id: 3,
 		timestamp: "16:00:22",
-		event: "Error temporal en conexión SAP RFC. Reintentando...",
+		event: "Error temporal en conexión SAP RFC. Reintentando…",
 		type: "warning",
 	},
 ];
@@ -213,7 +213,7 @@ const translations = {
 		whatsapp: "Agente WhatsApp AI",
 		sap: "SAP ERP Integration",
 		users: "Equipo y Operarios",
-		search: "Buscar en base de datos...",
+		search: "Buscar en base de datos…",
 		welcome: "WarehouseFlow SGA",
 		currentShift: "Turno Activo · Muelles A, B y C Operativos",
 		compRate: "Tasa de Servicio",
@@ -246,7 +246,7 @@ const translations = {
 		whatsapp: "WhatsApp AI Agent",
 		sap: "SAP ERP Integration",
 		users: "Team & Operators",
-		search: "Search database records...",
+		search: "Search database records…",
 		welcome: "WarehouseFlow WMS",
 		currentShift: "Active Shift · Docks A, B, and C Operational",
 		compRate: "Service Level",
@@ -541,7 +541,6 @@ export default function App() {
 						null,
 					);
 				} else if (entity === "staff") {
-					const randomNum = Math.floor(1 + Math.random() * 99);
 					const names = ["Pedro García", "Ana López", "Luis Martínez", "Carmen Ruiz", "José Fernández"];
 					const roles = ["Operario", "Supervisor", "Operario", "Operario"];
 					const zones = ["Zona A", "Zona B", "Zona C", "Oficina"];
@@ -587,14 +586,19 @@ export default function App() {
 
 	if (authLoading) {
 		return (
-			<div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+			<div
+				className="min-h-screen bg-[#050811] flex items-center justify-center"
+				role="status"
+				aria-label="Cargando sesión"
+			>
 				<div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+				<span className="sr-only">Cargando…</span>
 			</div>
 		);
 	}
 
 	return (
-		<div className="min-h-screen bg-[#0b0f19] text-slate-100 flex flex-col font-sans select-none antialiased">
+		<div className="min-h-screen bg-[#050811] text-slate-100 flex flex-col font-sans select-none antialiased">
 			{/* Top Banner / Navigation */}
 			<header className="bg-[#050811] border-b border-slate-800/80 shrink-0 sticky top-0 z-40 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
 				<div className="flex items-center space-x-3.5">
@@ -616,20 +620,29 @@ export default function App() {
 
 				{/* Search Bar */}
 				<div className="relative w-full max-w-xs md:max-w-md hidden sm:block">
-					<Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+					<Search
+						size={18}
+						className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
+						aria-hidden="true"
+					/>
 					<input
 						type="text"
+						aria-label={t.search}
 						placeholder={t.search}
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
-						className="w-full bg-[#0b0f19] border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-slate-200 placeholder-slate-500 transition-all duration-200"
+						className="w-full bg-[#050811] border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-600 focus-visible:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/30 transition-colors duration-200"
 					/>
 				</div>
 
 				<div className="flex items-center space-x-4">
 					{/* SQLite DB Status Indicator */}
-					<div className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#0b0f19] border border-slate-800 rounded-lg text-xs font-semibold">
-						<Database size={14} className={isBackendConnected ? "text-emerald-500" : "text-amber-500"} />
+					<div className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#0b0f19] border border-slate-800 rounded-xl text-xs font-semibold">
+						<Database
+							size={14}
+							className={isBackendConnected ? "text-emerald-500" : "text-amber-500"}
+							aria-hidden="true"
+						/>
 						<span className="hidden md:inline">
 							{isBackendConnected ? "Servidor SQLite" : "Mock Offline"}
 						</span>
@@ -639,13 +652,17 @@ export default function App() {
 					<button
 						type="button"
 						onClick={() => setIsApiKeyModalOpen(true)}
-						className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+						className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 disabled:opacity-50 disabled:cursor-not-allowed ${
 							hasApiKey
 								? "bg-indigo-950/60 text-indigo-300 border-indigo-800/80 hover:bg-indigo-900/40"
 								: "bg-amber-950/60 text-amber-300 border-amber-800/80 hover:bg-amber-900/40"
 						}`}
 					>
-						<Bot size={14} className={hasApiKey ? "text-indigo-400" : "text-amber-400"} />
+						<Bot
+							size={14}
+							className={hasApiKey ? "text-indigo-400" : "text-amber-400"}
+							aria-hidden="true"
+						/>
 						<span>{hasApiKey ? "DeepSeek Activo" : "Conectar IA"}</span>
 					</button>
 
@@ -653,10 +670,11 @@ export default function App() {
 					<button
 						type="button"
 						onClick={() => setLang(lang === "es" ? "en" : "es")}
-						className="p-2.5 bg-[#0b0f19] border border-slate-800 rounded-xl hover:text-white text-slate-400 transition"
+						className="p-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
 						title="Cambiar Idioma"
+						aria-label="Cambiar idioma"
 					>
-						<Globe size={18} />
+						<Globe size={18} aria-hidden="true" />
 					</button>
 
 					{/* User info + Logout */}
@@ -665,10 +683,11 @@ export default function App() {
 						<button
 							type="button"
 							onClick={logout}
-							className="p-2.5 bg-[#0b0f19] border border-slate-800 rounded-xl hover:text-rose-400 hover:border-rose-500/30 text-slate-400 transition"
+							className="p-2.5 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
 							title="Cerrar sesión"
+							aria-label="Cerrar sesión"
 						>
-							<LogOut size={18} />
+							<LogOut size={18} aria-hidden="true" />
 						</button>
 					</div>
 				</div>
@@ -759,42 +778,59 @@ export default function App() {
 					<button
 						type="button"
 						onClick={() => setActiveTab("dashboard")}
-						className={`flex flex-col items-center p-2 ${activeTab === "dashboard" ? "text-indigo-400" : "text-slate-500"}`}
+						aria-current={activeTab === "dashboard" ? "page" : undefined}
+						className={`flex flex-col items-center p-2 rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 ${
+							activeTab === "dashboard" ? "text-indigo-400" : "text-slate-500 hover:text-slate-300"
+						}`}
 					>
-						<LayoutDashboard size={20} />
+						<LayoutDashboard size={20} aria-hidden="true" />
 						<span className="text-[9px] mt-0.5">{t.dashboard}</span>
 					</button>
 					<button
 						type="button"
 						onClick={() => setActiveTab("inventory")}
-						className={`flex flex-col items-center p-2 relative ${activeTab === "inventory" ? "text-indigo-400" : "text-slate-500"}`}
+						aria-current={activeTab === "inventory" ? "page" : undefined}
+						className={`flex flex-col items-center p-2 relative rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 ${
+							activeTab === "inventory" ? "text-indigo-400" : "text-slate-500 hover:text-slate-300"
+						}`}
 					>
-						<Package size={20} />
+						<Package size={20} aria-hidden="true" />
 						<span className="text-[9px] mt-0.5">{t.inventory}</span>
 					</button>
 					<button
 						type="button"
 						onClick={() => setActiveTab("picking")}
-						className={`flex flex-col items-center p-2 ${activeTab === "picking" ? "text-indigo-400" : "text-slate-500"}`}
+						aria-current={activeTab === "picking" ? "page" : undefined}
+						className={`flex flex-col items-center p-2 rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 ${
+							activeTab === "picking" ? "text-indigo-400" : "text-slate-500 hover:text-slate-300"
+						}`}
 					>
-						<Mic size={20} />
+						<Mic size={20} aria-hidden="true" />
 						<span className="text-[9px] mt-0.5">{t.picking}</span>
 					</button>
 					<button
 						type="button"
 						onClick={() => setActiveTab("whatsapp")}
-						className={`flex flex-col items-center p-2 ${activeTab === "whatsapp" ? "text-indigo-400" : "text-slate-500"}`}
+						aria-current={activeTab === "whatsapp" ? "page" : undefined}
+						className={`flex flex-col items-center p-2 rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 ${
+							activeTab === "whatsapp" ? "text-indigo-400" : "text-slate-500 hover:text-slate-300"
+						}`}
 					>
-						<MessageCircle size={20} />
+						<MessageCircle size={20} aria-hidden="true" />
 						<span className="text-[9px] mt-0.5">WhatsApp</span>
 					</button>
 				</nav>
 
 				{/* Main Content Area */}
-				<main className="flex-1 bg-[#0b0f19] overflow-y-auto p-6 md:p-8 pb-24 md:pb-8">
+				<main className="flex-1 bg-[#050811] overflow-y-auto p-6 md:p-8 pb-24 md:pb-8">
 					{loading && (
-						<div className="fixed inset-0 bg-[#050811]/45 backdrop-blur-xs flex items-center justify-center z-50">
-							<Loader2 className="animate-spin text-indigo-500" size={40} />
+						<div
+							className="fixed inset-0 bg-[#050811]/70 backdrop-blur-sm flex items-center justify-center z-50"
+							role="status"
+							aria-label="Cargando datos"
+						>
+							<Loader2 className="animate-spin text-indigo-500" size={40} aria-hidden="true" />
+							<span className="sr-only">Cargando…</span>
 						</div>
 					)}
 
@@ -941,18 +977,19 @@ export default function App() {
 
 			{/* AI API Key Modal */}
 			{isApiKeyModalOpen && (
-				<div className="fixed inset-0 bg-[#050811]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-					<div className="bg-[#0b0f19] border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl">
+				<div className="fixed inset-0 bg-[#050811]/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+					<div className="bg-[#0b0f19] border border-slate-800 rounded-2xl p-6 w-full max-w-md shadow-2xl max-h-[85vh] overflow-y-auto overscroll-contain">
 						<div className="flex justify-between items-center mb-4">
 							<h3 className="text-lg font-bold flex items-center gap-2 text-indigo-400">
-								<Bot size={20} /> Conectar Inteligencia Artificial
+								<Bot size={20} aria-hidden="true" /> Conectar Inteligencia Artificial
 							</h3>
 							<button
 								type="button"
 								onClick={() => setIsApiKeyModalOpen(false)}
-								className="text-slate-400 hover:text-white transition"
+								className="p-1.5 -mr-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
+								aria-label="Cerrar"
 							>
-								<X size={20} />
+								<X size={20} aria-hidden="true" />
 							</button>
 						</div>
 						<p className="text-xs text-slate-400 mb-4">
@@ -961,10 +998,11 @@ export default function App() {
 						</p>
 						<input
 							type="password"
-							placeholder="DeepSeek API Key (sk-...)"
+							aria-label="DeepSeek API Key"
+							placeholder="DeepSeek API Key (sk-…)"
 							value={tempApiKey}
 							onChange={(e) => setTempApiKey(e.target.value)}
-							className="w-full bg-[#050811] border border-slate-800 rounded-xl p-3 text-sm text-slate-200 placeholder-slate-650 outline-none focus:border-indigo-500 mb-4"
+							className="w-full bg-[#050811] border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus-visible:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-500/30 mb-4"
 						/>
 						<div className="flex justify-end space-x-3 text-sm">
 							<button
@@ -975,14 +1013,14 @@ export default function App() {
 									setHasApiKey(false);
 									setIsApiKeyModalOpen(false);
 								}}
-								className="px-4 py-2 border border-slate-800 hover:bg-slate-800 rounded-xl text-slate-400"
+								className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								Limpiar Clave
 							</button>
 							<button
 								type="button"
 								onClick={handleSaveApiKey}
-								className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold"
+								className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								Guardar
 							</button>

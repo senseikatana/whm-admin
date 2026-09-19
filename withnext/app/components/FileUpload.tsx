@@ -82,7 +82,7 @@ export default function FileUpload({ onUpload, className }: FileUploadProps) {
 					<Upload size={32} className="text-slate-500 mx-auto mb-3" />
 				)}
 				<p className="text-sm text-slate-400">
-					{uploading ? "Subiendo archivos..." : "Arrastra archivos o haz clic para seleccionar"}
+					{uploading ? "Subiendo archivos…" : "Arrastra archivos o haz clic para seleccionar"}
 				</p>
 				<p className="text-xs text-slate-600 mt-1">Imágenes, documentos, archivos de almacén</p>
 			</div>

@@ -36,7 +36,7 @@ export default function DesktopDashboardView({
 	return (
 		<div className="space-y-6">
 			{/* KPI Section */}
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+			<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
 				<KpiCard
 					title={t.compRate}
 					value={hasData ? "98.4%" : "—"}
@@ -69,9 +69,9 @@ export default function DesktopDashboardView({
 
 			{/* Empty state or content */}
 			{!hasData ? (
-				<div className="bg-[#050811] border border-slate-800 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
+				<div className="bg-[#0b0f19] border border-slate-800 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
 					<div className="w-16 h-16 bg-slate-800/50 rounded-2xl flex items-center justify-center mb-4">
-						<Database size={32} className="text-slate-500" />
+						<Database size={32} className="text-slate-500" aria-hidden="true" />
 					</div>
 					<h3 className="text-lg font-bold text-white mb-2">Sin datos disponibles</h3>
 					<p className="text-sm text-slate-400 max-w-md mb-6">
@@ -79,36 +79,36 @@ export default function DesktopDashboardView({
 						dashboard operativo.
 					</p>
 					<div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-						<div className="flex flex-col items-center gap-2 p-4 bg-[#0b0f19] rounded-xl border border-slate-800">
-							<Package size={20} className="text-slate-500" />
+						<div className="flex flex-col items-center gap-2 p-4 bg-[#050811] rounded-xl border border-slate-800">
+							<Package size={20} className="text-slate-500" aria-hidden="true" />
 							<span className="text-[10px] font-bold text-slate-500 uppercase">Inventario</span>
-							<span className="text-lg font-black text-slate-600">0</span>
+							<span className="text-lg font-black text-slate-600 tabular-nums">0</span>
 						</div>
-						<div className="flex flex-col items-center gap-2 p-4 bg-[#0b0f19] rounded-xl border border-slate-800">
-							<Truck size={20} className="text-slate-500" />
+						<div className="flex flex-col items-center gap-2 p-4 bg-[#050811] rounded-xl border border-slate-800">
+							<Truck size={20} className="text-slate-500" aria-hidden="true" />
 							<span className="text-[10px] font-bold text-slate-500 uppercase">Órdenes</span>
-							<span className="text-lg font-black text-slate-600">0</span>
+							<span className="text-lg font-black text-slate-600 tabular-nums">0</span>
 						</div>
-						<div className="flex flex-col items-center gap-2 p-4 bg-[#0b0f19] rounded-xl border border-slate-800">
-							<Users size={20} className="text-slate-500" />
+						<div className="flex flex-col items-center gap-2 p-4 bg-[#050811] rounded-xl border border-slate-800">
+							<Users size={20} className="text-slate-500" aria-hidden="true" />
 							<span className="text-[10px] font-bold text-slate-500 uppercase">Personal</span>
-							<span className="text-lg font-black text-slate-600">0</span>
+							<span className="text-lg font-black text-slate-600 tabular-nums">0</span>
 						</div>
-						<div className="flex flex-col items-center gap-2 p-4 bg-[#0b0f19] rounded-xl border border-slate-800">
-							<AlertTriangle size={20} className="text-slate-500" />
+						<div className="flex flex-col items-center gap-2 p-4 bg-[#050811] rounded-xl border border-slate-800">
+							<AlertTriangle size={20} className="text-slate-500" aria-hidden="true" />
 							<span className="text-[10px] font-bold text-slate-500 uppercase">Alertas</span>
-							<span className="text-lg font-black text-slate-600">0</span>
+							<span className="text-lg font-black text-slate-600 tabular-nums">0</span>
 						</div>
 					</div>
 				</div>
 			) : (
 				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 					{/* Activity Volume Chart */}
-					<div className="bg-[#050811] border border-slate-800 p-5 rounded-2xl lg:col-span-2 flex flex-col justify-between">
+					<div className="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl lg:col-span-2 flex flex-col justify-between transition-colors duration-200 hover:border-slate-700">
 						<div className="flex justify-between items-center mb-4">
 							<div>
-								<h3 className="font-bold text-sm text-white">Volumen de Movimiento Diario</h3>
-								<p className="text-xs text-slate-400">Entradas vs Salidas de palets</p>
+								<h3 className="text-sm font-semibold text-slate-300">Volumen de Movimiento Diario</h3>
+								<p className="text-xs text-slate-500">Entradas vs Salidas de palets</p>
 							</div>
 							<span className="text-[10px] font-bold px-2 py-1 bg-indigo-950 text-indigo-300 rounded border border-indigo-900">
 								Últimos 7 días
@@ -151,8 +151,8 @@ export default function DesktopDashboardView({
 					</div>
 
 					{/* Live Feed Logs */}
-					<div className="bg-[#050811] border border-slate-800 p-5 rounded-2xl flex flex-col">
-						<h3 className="font-bold text-sm text-white mb-4">Registro Operativo de Almacén</h3>
+					<div className="bg-[#0b0f19] border border-slate-800 p-5 rounded-2xl flex flex-col transition-colors duration-200 hover:border-slate-700">
+						<h3 className="text-sm font-semibold text-slate-300 mb-4">Registro Operativo de Almacén</h3>
 						<div className="flex-1 overflow-y-auto space-y-3.5 max-h-56 pr-2">
 							{[
 								{
@@ -184,7 +184,7 @@ export default function DesktopDashboardView({
 										<p className="font-semibold text-slate-200">{log.task}</p>
 										<p className="text-[10px] text-indigo-400 font-medium">{log.zone}</p>
 									</div>
-									<span className="text-[10px] text-slate-500 font-bold">{log.time}</span>
+									<span className="text-[10px] text-slate-500 font-bold tabular-nums">{log.time}</span>
 								</div>
 							))}
 						</div>

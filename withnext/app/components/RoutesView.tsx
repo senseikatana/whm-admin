@@ -53,11 +53,11 @@ export default function RoutesView() {
 	};
 
 	return (
-		<div className="bg-[#050811] border border-slate-800 p-6 rounded-2xl space-y-6">
+		<div className="bg-[#0b0f19] border border-slate-800 p-6 rounded-2xl space-y-6">
 			<div className="flex justify-between items-center">
 				<div>
 					<h2 className="text-lg font-black text-white flex items-center gap-2">
-						<RouteIcon className="text-indigo-400" /> Planificador de Rutas de Almacén
+						<RouteIcon className="text-indigo-400" aria-hidden="true" /> Planificador de Rutas de Almacén
 					</h2>
 					<p className="text-xs text-slate-400">
 						Cálculo inteligente de rutas internas para minimizar distancias de picking
@@ -66,21 +66,25 @@ export default function RoutesView() {
 				<button
 					onClick={handleOptimizeRoute}
 					disabled={loadingRoute}
-					className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition disabled:opacity-50"
+					className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40"
 					type="button"
 				>
-					{loadingRoute ? <Loader2 className="animate-spin" size={14} /> : <Bot size={14} />} Optimizar
-					con IA
+					{loadingRoute ? (
+						<Loader2 className="animate-spin" size={14} aria-hidden="true" />
+					) : (
+						<Bot size={14} aria-hidden="true" />
+					)}{" "}
+					Optimizar con IA
 				</button>
 			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 				{/* Visual Map */}
-				<div className="lg:col-span-2 bg-[#0b0f19] border border-slate-800 p-6 rounded-xl relative">
+				<div className="lg:col-span-2 bg-[#050811] border border-slate-800 p-6 rounded-xl relative transition-colors duration-200 hover:border-slate-700">
 					<p className="text-xs font-bold text-slate-400 mb-4 uppercase tracking-wider">
 						Mapa del Almacén
 					</p>
-					<div className="grid grid-cols-4 gap-4 h-64 border border-slate-800/80 rounded-xl p-4 bg-slate-950/40 relative">
+					<div className="grid grid-cols-4 gap-4 h-64 border border-slate-800/80 rounded-xl p-4 bg-[#050811]/60 relative">
 						<div className="absolute top-2 left-2 px-2 py-0.5 bg-indigo-900 text-indigo-300 border border-indigo-700 rounded text-[9px] font-bold">
 							Muelles A, B, C
 						</div>
@@ -103,20 +107,27 @@ export default function RoutesView() {
 				</div>
 
 				{/* Optimization results */}
-				<div className="bg-[#0b0f19] border border-slate-800 p-5 rounded-xl flex flex-col">
+				<div className="bg-[#050811] border border-slate-800 p-5 rounded-xl flex flex-col transition-colors duration-200 hover:border-slate-700">
 					<h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-1">
-						<Sparkles size={14} className="text-indigo-400" /> Ruta Recomendada
+						<Sparkles size={14} className="text-indigo-400" aria-hidden="true" /> Ruta Recomendada
 					</h3>
-					<div className="flex-1 overflow-y-auto max-h-56 pr-1 text-xs text-slate-300 font-semibold space-y-3">
+					<div
+						className="flex-1 overflow-y-auto max-h-56 pr-1 text-xs text-slate-300 font-semibold space-y-3"
+						aria-live="polite"
+					>
 						{optimizedText ? (
-							<p className="leading-relaxed bg-[#050811] p-4 rounded-xl border border-slate-805">
+							<p className="leading-relaxed bg-[#0b0f19] p-4 rounded-xl border border-slate-800">
 								{optimizedText}
 							</p>
 						) : (
-							<p className="text-slate-500 italic">
-								Haz clic en "Optimizar con IA" para recibir instrucciones optimizadas basadas en la carga de
-								trabajo actual.
-							</p>
+							<div className="flex flex-col items-center justify-center text-center py-6">
+								<RouteIcon size={24} className="text-slate-600 mb-2" aria-hidden="true" />
+								<p className="text-sm font-semibold text-slate-300">Sin ruta calculada</p>
+								<p className="text-xs text-slate-500 mt-1 italic">
+									Haz clic en "Optimizar con IA" para recibir instrucciones optimizadas basadas en la carga
+									de trabajo actual.
+								</p>
+							</div>
 						)}
 					</div>
 				</div>
