@@ -1,0 +1,88 @@
+# Dependencias
+node_modules/
+.pnpm-store/
+.yarn/
+bun.lockb
+bun.lock 
+# Carpetas y archivos ocultos del sistema
+.*
+!.gitignore
+!.env.example
+!.prettierrc
+!.eslintrc.json
+
+# Compilaciones y logs
+dist/
+build/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+bun-debug.log*
+
+# Prisma
+prisma/migrations/
+prisma/*.db
+prisma/*.db-journal
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Cache
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.output/
+coverage/
+
+# Keystatic CMS
+keystatic-content/
+.keystatic/
+
+# katanakit-js generated
+.katanakit/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+
+# Others
+*.txt
+skills-lock.json
+scripts/
+CLAUDE.md
+
+
+# Base de datos local del server de mensajeria
+server/data/
+
+# InsForge & AI agent skills
+.insforge
+.agent
+.agents
+.augment
+.claude
+.cline
+.github/copilot*
+.kilocode
+.qoder
+.qwen
+.roo
+.trae
+.windsurf
+
+# Plataformas de despliegue
+.netlify/
+.vercel/
+.wrangler/

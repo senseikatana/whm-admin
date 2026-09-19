@@ -1,0 +1,107 @@
+---
+import PublicLayout from '../../layouts/PublicLayout.astro';
+
+const kpis = [
+	{ value: '+1.600', label: 'Clientes industriales satisfechos' },
+	{ value: '40', label: 'Años de experiencia demostrada (1985)' },
+	{ value: '+25', label: 'Profesionales especializados en equipo' },
+	{ value: '~15', label: 'Países receptores de exportación' },
+	{ value: '+60.000', label: 'Referencias en stock permanente' },
+];
+
+const values = [
+	{
+		title: 'Excelencia Técnica y Humana',
+		desc: 'Valoramos al equipo humano como el activo más importante, promoviendo la formación continua, el trabajo colaborativo y el bienestar laboral.',
+	},
+	{
+		title: 'Capacidad Productiva',
+		desc: 'La innovación tecnológica continua nos permite optimizar tiempos de entrega y fabricar juntas a medida de forma inmediata.',
+	},
+	{
+		title: 'Innovación Permanente',
+		desc: 'Incorporación de tecnologías avanzadas como el corte por chorro de agua y sistemas SGA automatizados para supervisión de calidad.',
+	},
+	{
+		title: 'Calidad Certificada (ISO 9000)',
+		desc: 'Materias primas de primera calidad y supervisión rigurosa para garantizar la total ausencia de fugas en uniones bridadas.',
+	},
+];
+---
+
+<PublicLayout title="Nuestra Empresa (Desde 1985) — ESINSA Riu Clar (Tarragona)">
+	<!-- Header Banner (siempre oscuro) -->
+	<div class="bg-gradient-to-b from-[#0F172A] to-[#0B1120] py-12 text-white border-b border-slate-800">
+		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<span class="text-xs font-bold uppercase tracking-wider text-blue-400">Trayectoria y Compromiso</span>
+			<h1 class="text-3xl font-black tracking-tight sm:text-4xl mt-1">Nuestra Historia</h1>
+			<p class="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
+				Desde 1985 brindando soluciones de estanqueidad, juntas planas y tornillería industrial a los sectores más exigentes de la industria.
+			</p>
+		</div>
+	</div>
+
+	<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+		<!-- History narrative -->
+		<div class="grid grid-cols-1 gap-12 lg:grid-cols-2 items-center mb-16">
+			<div>
+				<h2 class="text-2xl font-black text-slate-900 mb-4 dark:text-white">40 años de estanqueidad industrial</h2>
+				<p class="text-sm text-slate-600 leading-relaxed mb-4 dark:text-slate-300">
+					Desde 1985, en <strong class="text-slate-900 dark:text-white">ESINSA</strong> fabricamos juntas planas de estanqueidad y distribuimos juntas y tornillería industrial a diversos sectores. Ofrecemos servicios de corte y plegado de materiales, junto con un servicio técnico personalizado de asesoramiento a nuestros clientes.
+				</p>
+				<p class="text-sm text-slate-600 leading-relaxed mb-4 dark:text-slate-300">
+					Nuestra empresa nació para dar respuesta a una amplia cartera de clientes que requerían una atención personalizada y asesoramiento técnico especializado para dar solución a sus problemas críticos de estanqueidad. Con el paso de los años, consolidamos nuestro posicionamiento estratégico en los sectores petroquímico, químico, energético y de refinerías.
+				</p>
+				<div class="rounded-lg bg-blue-50 border border-blue-200 p-4 text-xs text-blue-900 dark:bg-blue-950/60 dark:border-blue-800/40 dark:text-blue-300">
+					<strong>Instalaciones Centrales:</strong> Polígono Industrial Riu Clar, C/. Ferro Nº 10 – 43006 Tarragona.
+				</div>
+			</div>
+
+			<!-- KPIs Grid -->
+			<div class="grid grid-cols-2 gap-4">
+				{kpis.map((k, i) => (
+					<div class={`rounded-xl border border-slate-200 bg-white p-6 shadow-sm text-center dark:border-slate-800 dark:bg-slate-900/70 ${i === 4 ? 'col-span-2' : ''}`}>
+						<div class="text-3xl font-black text-blue-600 mb-1 dark:text-blue-400">{k.value}</div>
+						<div class="text-xs text-slate-600 font-medium dark:text-slate-400">{k.label}</div>
+					</div>
+				))}
+			</div>
+		</div>
+
+		<!-- Mission & Vision -->
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+			<div class="rounded-xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+				<div class="inline-block rounded-md bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700 uppercase mb-3 dark:bg-blue-950/80 dark:border dark:border-blue-800/40 dark:text-blue-400">
+					Misión
+				</div>
+				<p class="text-sm text-slate-600 leading-relaxed dark:text-slate-300">
+					Ofrecemos soluciones de estanqueidad de alta calidad al mercado industrial mediante la fabricación de juntas planas, amplia disponibilidad de tornillería industrial, corte y plegado, calidad en los acabados e inmediatez en los plazos de entrega, fomentando relaciones de confianza y satisfacción a largo plazo.
+				</p>
+			</div>
+
+			<div class="rounded-xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+				<div class="inline-block rounded-md bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700 uppercase mb-3 dark:bg-emerald-950/80 dark:border dark:border-emerald-800/40 dark:text-emerald-400">
+					Visión
+				</div>
+				<p class="text-sm text-slate-600 leading-relaxed dark:text-slate-300">
+					Fomentamos la confianza y el compromiso con nuestros clientes y proveedores para garantizar un proceso de mejora continua y sostenibilidad ambiental, impulsados por un equipo humano altamente cualificado, innovación tecnológica constante y excelencia en la ejecución.
+				</p>
+			</div>
+		</div>
+
+		<!-- 4 Corporate Values -->
+		<div>
+			<h2 class="text-center text-xs font-bold uppercase tracking-wider text-blue-600 mb-2 dark:text-blue-400">Pilares Fundamentales</h2>
+			<p class="text-center text-2xl font-black text-slate-900 mb-8 dark:text-white">Nuestros Valores</p>
+
+			<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+				{values.map((v) => (
+					<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+						<h3 class="text-sm font-bold text-slate-900 mb-2 dark:text-white">{v.title}</h3>
+						<p class="text-xs text-slate-600 leading-relaxed dark:text-slate-400">{v.desc}</p>
+					</div>
+				))}
+			</div>
+		</div>
+	</div>
+</PublicLayout>

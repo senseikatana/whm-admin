@@ -1,0 +1,134 @@
+---
+const navLinks = [
+	{ label: 'Inicio', href: '/' },
+	{ label: 'Empresa', href: '/empresa' },
+	{ label: 'Productos', href: '/productos' },
+	{ label: 'Servicios', href: '/servicios' },
+	{ label: 'Contacto', href: '/contacto' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+	id="main-header"
+	class="fixed top-0 left-0 right-0 z-50 w-full border-b transition-all duration-300 ease-in-out"
+>
+	<div
+		id="header-inner"
+		class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8 transition-all duration-300"
+	>
+		<!-- Logotipo original (transparente), sin texto lateral -->
+		<a href="/" class="flex items-center gap-3 group" aria-label="ESINSA — Inicio">
+			<!-- Versión oscura (modo claro) -->
+			<img
+				src="/logotipESINSA_R-1.png"
+				alt="ESINSA"
+				class="h-9 w-auto object-contain dark:hidden transition-transform group-hover:scale-105"
+			/>
+			<!-- Versión blanca (modo oscuro) -->
+			<img
+				src="/logotipESINSA_R-1-white.png"
+				alt="ESINSA"
+				class="hidden h-9 w-auto object-contain drop-shadow-[0_0_12px_rgba(59,130,246,0.35)] dark:block transition-transform group-hover:scale-105"
+			/>
+		</a>
+
+		<!-- Desktop Navigation -->
+		<nav class="hidden md:flex items-center gap-7">
+			{navLinks.map((link) => {
+				const isActive = currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href));
+				return (
+					<a
+						href={link.href}
+						class={`text-xs font-bold uppercase tracking-wider transition-colors ${
+							isActive
+								? 'text-blue-600 border-b-2 border-blue-600 pb-0.5 dark:text-blue-400 dark:border-blue-400'
+								: 'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white'
+						}`}
+					>
+						{link.label}
+					</a>
+				);
+			})}
+		</nav>
+
+		<!-- Right Action Buttons -->
+		<div class="flex items-center gap-3">
+			<a
+				href="/dashboard"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-500/20 hover:from-blue-500 hover:to-cyan-500 transition-all hover:scale-[1.02] group"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/>
+				</svg>
+				<span>Acceso SGA</span>
+				<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-75 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+					<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+				</svg>
+			</a>
+		</div>
+	</div>
+</header>
+
+<style is:global>
+	/* Fondo esmerilado / glassmorphism siempre activo en la barra fija */
+	#main-header {
+		backdrop-filter: blur(16px) saturate(1.4);
+		-webkit-backdrop-filter: blur(16px) saturate(1.4);
+		background: rgba(255, 255, 255, 0.6);
+		border-bottom-color: rgba(226, 232, 240, 0.7);
+	}
+	.dark #main-header {
+		background: rgba(11, 17, 32, 0.6);
+		border-bottom-color: rgba(30, 41, 59, 0.7);
+	}
+
+	/* Estado "desplazado": intensifica el cristal y añade sombra */
+	#main-header.is-scrolled {
+		background: rgba(255, 255, 255, 0.85);
+		box-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.08);
+	}
+	.dark #main-header.is-scrolled {
+		background: rgba(11, 17, 32, 0.85);
+		box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+	}
+	#main-header.is-scrolled #header-inner {
+		padding-top: 0.625rem;
+		padding-bottom: 0.625rem;
+	}
+</style>
+
+<script>
+	let lastScrollY = window.scrollY;
+	const header = document.getElementById('main-header');
+
+	function handleScroll() {
+		const currentScrollY = window.scrollY;
+
+		if (currentScrollY > 20) {
+			header?.classList.add('is-scrolled');
+		} else {
+			header?.classList.remove('is-scrolled');
+		}
+
+		// Ocultación dinámica al bajar, aparición al subir
+		if (currentScrollY > 120 && currentScrollY > lastScrollY) {
+			header?.classList.add('-translate-y-full');
+		} else {
+			header?.classList.remove('-translate-y-full');
+		}
+
+		lastScrollY = Math.max(0, currentScrollY);
+	}
+
+	// Evita duplicar listeners al navegar con View Transitions
+	const flag = (window as any).__esinsaHeaderBound;
+	if (!flag) {
+		(window as any).__esinsaHeaderBound = true;
+		window.addEventListener('scroll', handleScroll, { passive: true });
+	}
+	handleScroll();
+</script>

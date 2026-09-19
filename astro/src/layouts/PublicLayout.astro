@@ -1,0 +1,71 @@
+---
+import '../styles/global.css';
+import Header from '../components/public/Header.astro';
+import Footer from '../components/public/Footer.astro';
+import ThemeToggle from '../components/public/ThemeToggle.astro';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+	title?: string;
+	description?: string;
+	lang?: 'es' | 'ca';
+}
+
+const {
+	title = 'ESINSA — Soluciones de Estanqueidad Industrial y Tornillería (Tarragona)',
+	description = 'Fabricación y distribución de juntas de estanqueidad, juntas espirometálicas 316L, tornillería industrial y servicios de corte y plegado. Polígono Riu Clar, Tarragona.',
+	lang = 'es',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang} class="scroll-smooth">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+
+		<!-- Aplicación temprana del tema para evitar parpadeo (FOUC) -->
+		<script is:inline>
+			(function () {
+				try {
+					var stored = localStorage.getItem('esinsa-theme');
+					var mode = stored === 'light' || stored === 'dark' ? stored : 'system';
+					var resolved =
+						mode === 'system'
+							? window.matchMedia('(prefers-color-scheme: dark)').matches
+								? 'dark'
+								: 'light'
+							: mode;
+					var root = document.documentElement;
+					root.classList.remove('light', 'dark');
+					root.classList.add(resolved);
+					root.setAttribute('data-theme', resolved);
+					root.style.colorScheme = resolved;
+				} catch (e) {}
+			})();
+		</script>
+
+		<!-- Navegación tipo SPA sin recarga de página (View Transitions) -->
+		<ClientRouter />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body class="bg-slate-50 font-sans text-slate-900 antialiased selection:bg-blue-600 selection:text-white flex min-h-screen flex-col dark:bg-[#0B1120] dark:text-slate-100">
+		<Header />
+		<main class="flex-1 pt-16 sm:pt-20">
+			<slot />
+		</main>
+		<Footer />
+		<ThemeToggle />
+	</body>
+</html>

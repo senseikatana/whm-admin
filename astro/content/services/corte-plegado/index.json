@@ -1,0 +1,13 @@
+{
+  "slug": "corte-plegado",
+  "name": "Corte por Chorro de Agua y Plegado CNC",
+  "summary": "Servicio de corte a medida para juntas no estándar, chapas de grafito armado, PTFE y metales especiales con tolerancias mínimas.",
+  "leadTimeHours": 24,
+  "materialsHandled": [
+    "Inconel",
+    "Acero Inox 316L",
+    "PTFE Expandido",
+    "Grafito Laminado con Malla",
+    "Cobre y Latón"
+  ]
+}

@@ -1,0 +1,387 @@
+// =============================================================================
+// ESINSA SGA (Warehouse Management System) - Prisma Schema
+// Warehouse location: Polígono Industrial Riu Clar, Tarragona (Spain)
+// Specialist in flat sealing gaskets, industrial bolting, cutting & folding
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------------------------------------
+// Core Warehouse Structure
+// -----------------------------------------------------------------------------
+
+model Warehouse {
+  id          String          @id @default(uuid())
+  code        String          @unique
+  name        String
+  address     String          @default("Pol. Ind. Riu Clar, Carrer del Coure, 43006 Tarragona")
+  description String?
+  zones       WarehouseZone[]
+  users       UserProfile[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@map("sga_warehouses")
+}
+
+enum ZoneType {
+  STORAGE
+  RECEPTION
+  EXPEDITION
+  CUTTING_FOLDING
+  QUALITY_INSPECTION
+}
+
+model WarehouseZone {
+  id          String      @id @default(uuid())
+  code        String
+  name        String
+  type        ZoneType    @default(STORAGE)
+  warehouseId String
+  warehouse   Warehouse   @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  locations   Location[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([warehouseId, code])
+  @@map("sga_warehouse_zones")
+}
+
+model Location {
+  id             String          @id @default(uuid())
+  code           String          @unique // e.g., "RC-A-01-02-01"
+  zoneId         String
+  zone           WarehouseZone   @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+  aisle          String          // Pasillo
+  rack           String          // Estantería
+  shelf          String          // Altura / Nivel
+  bin            String          // Posición / Casillero
+  maxWeightKg    Float?
+  isOccupied     Boolean         @default(false)
+  items          InventoryItem[]
+  movementsFrom  StockMovement[] @relation("MovementsFromLocation")
+  movementsTo    StockMovement[] @relation("MovementsToLocation")
+  pickingTasks   PickingTask[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([zoneId])
+  @@map("sga_locations")
+}
+
+// -----------------------------------------------------------------------------
+// Inventory & Catalog (ESINSA NUT Codes & Materials)
+// -----------------------------------------------------------------------------
+
+enum ItemCategory {
+  FLAT_GASKET        // Juntas planas
+  SPIRAL_WOUND       // Juntas espirometálicas 316L
+  GRAPHITE_GASKET    // Grafito flexible
+  PTFE_GASKET        // PTFE virgen y expandido
+  KAMMPROFILE        // Juntas dentadas / Kammprofile
+  RTJ_METALLIC       // Ring Type Joint (RTJ) metálicas
+  INDUSTRIAL_BOLTING // Espárragos B7, B8M, B16 y tuercas 2H
+  SHEET_RAW_MATERIAL // Planchas inox, acero, cobre para corte
+  CUT_SERVICE_PART   // Piezas cortadas bajo pedido
+}
+
+enum AbcVelocity {
+  A
+  B
+  C
+}
+
+enum StockStatus {
+  OK
+  LOW
+  CRITICAL
+}
+
+model InventoryItem {
+  id                String             @id @default(uuid())
+  sku               String             @unique // NUT format e.g., "NUT0004001"
+  name              String
+  description       String?
+  category          ItemCategory       @default(FLAT_GASKET)
+  abcClass          AbcVelocity        @default(B)
+  stock             Int                @default(0)
+  minStock          Int                @default(10)
+  maxStock          Int?
+  unit              String             @default("Uds")
+  status            StockStatus        @default(OK)
+  locationId        String?
+  location          Location?          @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  movements         StockMovement[]
+  inboundOrderItems InboundOrderItem[]
+  outboundOrderItems OutboundOrderItem[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([abcClass])
+  @@index([status])
+  @@index([locationId])
+  @@map("sga_inventory_items")
+}
+
+enum MovementType {
+  INBOUND_RECEIPT
+  OUTBOUND_PICKING
+  INTERNAL_TRANSFER
+  INVENTORY_ADJUSTMENT
+  CUTTING_FEED
+  SCRAP_DISPOSAL
+}
+
+model StockMovement {
+  id             String        @id @default(uuid())
+  itemId         String
+  item           InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  fromLocationId String?
+  fromLocation   Location?     @relation("MovementsFromLocation", fields: [fromLocationId], references: [id], onDelete: SetNull)
+  toLocationId   String?
+  toLocation     Location?     @relation("MovementsToLocation", fields: [toLocationId], references: [id], onDelete: SetNull)
+  quantity       Int
+  type           MovementType
+  reference      String?       // Order or route reference
+  operatorId     String?
+  notes          String?
+  timestamp      DateTime      @default(now())
+
+  @@index([itemId])
+  @@index([timestamp])
+  @@map("sga_stock_movements")
+}
+
+// -----------------------------------------------------------------------------
+// Inbound Logistics (Recepciones)
+// -----------------------------------------------------------------------------
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+enum InboundOperationType {
+  STOCKING
+  CROSS_DOCKING
+}
+
+model InboundOrder {
+  id            String               @id @default(uuid())
+  orderRef      String               @unique // e.g. "IN-2026-1042"
+  supplier      String
+  status        OrderStatus          @default(PENDING)
+  operationType InboundOperationType @default(STOCKING)
+  totalItems    Int                  @default(0)
+  receivedAt    DateTime?
+  items         InboundOrderItem[]
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@map("sga_inbound_orders")
+}
+
+model InboundOrderItem {
+  id          String        @id @default(uuid())
+  orderId     String
+  order       InboundOrder  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemId      String
+  item        InventoryItem @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  expectedQty Int
+  receivedQty Int           @default(0)
+
+  @@index([orderId])
+  @@index([itemId])
+  @@map("sga_inbound_order_items")
+}
+
+// -----------------------------------------------------------------------------
+// Outbound Logistics & Picking (Expediciones)
+// -----------------------------------------------------------------------------
+
+enum OutboundOperationType {
+  STANDARD
+  CROSS_DOCKING
+  URGENT_EMERGENCY
+}
+
+model OutboundOrder {
+  id            String                @id @default(uuid())
+  orderRef      String                @unique // e.g. "OUT-2026-2201"
+  client        String
+  status        OrderStatus           @default(PENDING)
+  operationType OutboundOperationType @default(STANDARD)
+  totalItems    Int                   @default(0)
+  deliveryRoute String?
+  items         OutboundOrderItem[]
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  @@map("sga_outbound_orders")
+}
+
+model OutboundOrderItem {
+  id           String        @id @default(uuid())
+  orderId      String
+  order        OutboundOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemId       String
+  item         InventoryItem @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  requestedQty Int
+  pickedQty    Int           @default(0)
+  pickingTasks PickingTask[]
+
+  @@index([orderId])
+  @@index([itemId])
+  @@map("sga_outbound_order_items")
+}
+
+enum WaveStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model PickingWave {
+  id          String        @id @default(uuid())
+  waveNumber  String        @unique // e.g., "WAVE-2026-001"
+  status      WaveStatus    @default(PLANNED)
+  operatorId  String?
+  tasks       PickingTask[]
+  createdAt   DateTime      @default(now())
+  completedAt DateTime?
+
+  @@map("sga_picking_waves")
+}
+
+model PickingTask {
+  id            String            @id @default(uuid())
+  waveId        String
+  wave          PickingWave       @relation(fields: [waveId], references: [id], onDelete: Cascade)
+  orderItemId   String
+  orderItem     OutboundOrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  locationId    String
+  location      Location          @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  targetQty     Int
+  pickedQty     Int               @default(0)
+  isVoiceGuided Boolean           @default(false)
+  isCompleted   Boolean           @default(false)
+  createdAt     DateTime          @default(now())
+  completedAt   DateTime?
+
+  @@index([waveId])
+  @@index([locationId])
+  @@map("sga_picking_tasks")
+}
+
+// -----------------------------------------------------------------------------
+// Transport & Logistics Routes (Tarragona and Surrounding Hubs)
+// -----------------------------------------------------------------------------
+
+enum RouteStatus {
+  AVAILABLE
+  EN_ROUTE
+  COMPLETED
+  CANCELLED
+}
+
+model TransportRoute {
+  id               String      @id @default(uuid())
+  routeId          String      @unique // e.g., "R-AR-01"
+  driver           String
+  vehiclePlate     String?
+  destinationZone  String      @default("Camp de Tarragona")
+  status           RouteStatus @default(AVAILABLE)
+  currentStopCount Int         @default(0)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@map("sga_transport_routes")
+}
+
+// -----------------------------------------------------------------------------
+// CRM & Industrial Clients
+// -----------------------------------------------------------------------------
+
+enum CrmPhase {
+  NEW_LEAD
+  IN_NEGOTIATION
+  ACTIVE_CLIENT
+  INACTIVE
+}
+
+model CrmAccount {
+  id          String   @id @default(uuid())
+  code        String   @unique // e.g., "CL-1001"
+  company     String
+  contactName String?
+  email       String?
+  phone       String?
+  city        String   @default("Tarragona")
+  leadScore   Int      @default(50)
+  status      CrmPhase @default(ACTIVE_CLIENT)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("sga_crm_accounts")
+}
+
+// -----------------------------------------------------------------------------
+// User Profiles & Roles
+// -----------------------------------------------------------------------------
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  PICKER
+  FORMADOR
+  PRACTICAS
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model UserProfile {
+  id          String     @id @default(uuid())
+  code        String     @unique // e.g., "OP-101"
+  name        String
+  email       String     @unique
+  role        UserRole   @default(PICKER)
+  status      UserStatus @default(ACTIVE)
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id], onDelete: SetNull)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("sga_user_profiles")
+}
+
+// -----------------------------------------------------------------------------
+// Audit Trail & Activity Log
+// -----------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  entity     String
+  entityId   String
+  operatorId String?
+  payload    Json?
+  timestamp  DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([timestamp])
+  @@map("sga_audit_logs")
+}

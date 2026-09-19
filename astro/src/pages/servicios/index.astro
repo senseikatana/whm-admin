@@ -1,0 +1,89 @@
+---
+import PublicLayout from '../../layouts/PublicLayout.astro';
+
+const services = [
+	{
+		slug: 'quality-service',
+		title: 'Quality Service e Ingeniería Aplicada',
+		category: 'Ingeniería',
+		desc: 'Asesoramiento técnico especializado para eliminar fugas y fallos relacionados con el montaje de uniones bridadas en plantas petroquímicas e industriales.',
+		details: ['Estudios de estanqueidad', 'Selección de junta y tornillería según fluido y presión', 'Auditoría in-situ'],
+	},
+	{
+		slug: 'calculo-pares-apriete',
+		title: 'Cálculo de Pares de Apriete',
+		category: 'Oficina Técnica',
+		desc: 'Determinación precisa del par de apriete óptimo para espárragos ASTM A193 B7/B8M y tuercas 2H/8M, evitando el aplastamiento excesivo o la falta de compresión de la junta.',
+		details: ['Cálculo según ASME PCC-1', 'Protocolos de apriete en cruz', 'Tablas personalizadas por diámetro'],
+	},
+	{
+		slug: 'verificacion-montajes',
+		title: 'Verificación de Montajes de Juntas',
+		category: 'Supervisión de Campo',
+		desc: 'Servicio técnico de verificación y control del procedimiento de montaje para asegurar que se cumplen los estándares de estanqueidad exigidos por la normativa.',
+		details: ['Revisión de paralelismo de bridas', 'Estado de caras de junta', 'Inspección de par con dinamométrica'],
+	},
+	{
+		slug: 'corte-chorro-agua',
+		title: 'Corte por Chorro de Agua (Waterjet)',
+		category: 'Taller Riu Clar',
+		desc: 'Mecanizado y corte en frío de geometrías complejas para juntas no estándar sobre planchas de acero, inox, aluminio, cobre, latón, grafito armado o PTFE.',
+		details: ['Sin alteración térmica del material', 'Tolerancias milimétricas', 'Plazos exprés en 24 horas'],
+	},
+	{
+		slug: 'plegado-cnc',
+		title: 'Plegado CNC de Materiales',
+		category: 'Taller Riu Clar',
+		desc: 'Conformado y plegado de piezas metálicas, soportes para tuberías y elementos auxiliares de estanqueidad en chapas de hasta 3 mm de espesor.',
+		details: ['Plegadora de control numérico', 'Acabados precisos', 'Prototipos y series cortas'],
+	},
+	{
+		slug: 'entregas-programadas',
+		title: 'Gestión y Entrega Programada',
+		category: 'Logística',
+		desc: 'Suministro y acuerdos de consignación de stock para paradas de planta y mantenimientos programados en el Polo Petroquímico de Tarragona.',
+		details: ['Kits personalizados por equipo', 'Entregas en turno 24/7 para emergencias', 'Trazabilidad con códigos NUT'],
+	},
+];
+---
+
+<PublicLayout title="Servicios Técnicos y Taller — ESINSA Riu Clar (Tarragona)">
+	<div class="bg-gradient-to-b from-[#0F172A] to-[#0B1120] py-12 text-white border-b border-slate-800">
+		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<span class="text-xs font-bold uppercase tracking-wider text-blue-400">Oficina Técnica y Taller</span>
+			<h1 class="text-3xl font-black tracking-tight sm:text-4xl mt-1">Servicios de Ingeniería y Taller</h1>
+			<p class="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
+				Asesoramiento técnico personalizado, cálculo de pares de apriete, corte por chorro de agua y verificación in-situ de uniones bridadas.
+			</p>
+		</div>
+	</div>
+
+	<div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+		<div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+			{services.map((s) => (
+				<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col hover:border-blue-400 hover:shadow-md transition-all dark:border-slate-800 dark:bg-slate-900/70 dark:hover:border-blue-500/60">
+					<span class="inline-block w-fit rounded-full bg-blue-50 px-3 py-1 text-[11px] font-bold text-blue-700 uppercase mb-3 border border-blue-100 dark:bg-blue-950/80 dark:border-blue-800/40 dark:text-blue-400">
+						{s.category}
+					</span>
+					<h3 class="text-base font-bold text-slate-900 mb-2 dark:text-white">{s.title}</h3>
+					<p class="text-xs text-slate-600 leading-relaxed mb-4 flex-1 dark:text-slate-300">{s.desc}</p>
+					<ul class="border-t border-slate-100 pt-3 space-y-1 text-xs text-slate-500 mb-4 dark:border-slate-800 dark:text-slate-400">
+						{s.details.map((d) => (
+							<li class="flex items-center gap-2">
+								<span class="text-blue-600 font-bold dark:text-blue-400">✓</span>
+								<span>{d}</span>
+							</li>
+						))}
+					</ul>
+					<a
+						href={`/servicios/${s.slug}`}
+						class="text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1 mt-auto dark:text-blue-400 dark:hover:text-blue-300"
+					>
+						<span>Ver detalles del servicio</span>
+						<span>→</span>
+					</a>
+				</div>
+			))}
+		</div>
+	</div>
+</PublicLayout>

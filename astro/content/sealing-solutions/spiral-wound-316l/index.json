@@ -1,0 +1,15 @@
+{
+  "code": "spiral-wound-316l",
+  "title": "Junta Espirometálica 316L DN50 PN16",
+  "category": "spiral-wound",
+  "standard": "ASME B16.20 / EN 1514-2",
+  "maxTemperature": 550,
+  "maxPressureBar": 250,
+  "description": "Junta de estanqueidad espiralada con espiras en acero inoxidable AISI 316L y relleno de grafito puro. Especial para refinerías, petroquímica y servicios de vapor.",
+  "applications": [
+    "Petroquímica de Tarragona",
+    "Refinerías",
+    "Generación de Energía",
+    "Vapor de alta presión"
+  ]
+}

@@ -1,0 +1,331 @@
+import { useState } from 'react';
+import { ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { roleLabel, resolveRoleId, type RoleDef } from '../../auth/roles';
+import type { AuthMode, RegisterInput } from '../../hooks/useAuth';
+import { useI18n } from '../../i18n/LocaleProvider';
+import type { Doc, Operator } from '../../types';
+
+interface LoginScreenProps {
+	operators: Doc[];
+	roles: RoleDef[];
+	loading: boolean;
+	authMode: AuthMode;
+	initialMode?: 'login' | 'register';
+	onSelect: (operator: Operator) => void;
+	onSignInWithPassword: (email: string, password: string) => Promise<string | null>;
+	onRegister: (input: RegisterInput) => Promise<{ error: string | null; needsConfirmation: boolean }>;
+	onSignInWithOAuth?: (provider: string) => Promise<string | null>;
+}
+
+const DEMO_OPERATOR: Doc = { id: 'demo', name: 'Demo', role: 'Admin' };
+
+export function LoginScreen({
+	operators,
+	roles,
+	loading,
+	authMode,
+	initialMode,
+	onSelect,
+	onSignInWithPassword,
+	onRegister,
+	onSignInWithOAuth,
+}: LoginScreenProps) {
+	const { S } = useI18n();
+	const [mode, setMode] = useState<'login' | 'register'>(initialMode ?? 'login');
+	const [selected, setSelected] = useState<string | null>(null);
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [name, setName] = useState('');
+	const [roleId, setRoleId] = useState('picker');
+	const [signingIn, setSigningIn] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [notice, setNotice] = useState<string | null>(null);
+
+	const oauthProviders = (import.meta.env.PUBLIC_AUTH_OAUTH_PROVIDERS ?? '')
+		.split(',')
+		.map((provider) => provider.trim())
+		.filter(Boolean);
+
+	const list = operators.length > 0 ? operators : [DEMO_OPERATOR];
+	const effectiveSelected = selected ?? list[0]?.id;
+
+	const confirm = () => {
+		const chosen = list.find((op) => op.id === effectiveSelected) ?? list[0];
+		onSelect({
+			uid: chosen.id,
+			name: String(chosen.name ?? DEMO_OPERATOR.name),
+			roleId: resolveRoleId(String(chosen.role ?? DEMO_OPERATOR.role)),
+		});
+	};
+
+	const submit = async (event: { preventDefault: () => void }) => {
+		event.preventDefault();
+		setSigningIn(true);
+		setError(null);
+		setNotice(null);
+		const message = await onSignInWithPassword(email.trim(), password);
+		if (message) setError(message);
+		setSigningIn(false);
+	};
+
+	const submitRegister = async (event: { preventDefault: () => void }) => {
+		event.preventDefault();
+		setSigningIn(true);
+		setError(null);
+		setNotice(null);
+		const { error: message, needsConfirmation } = await onRegister({
+			email: email.trim(),
+			password,
+			name: name.trim(),
+			roleId,
+		});
+		if (message) {
+			setError(message);
+		} else if (needsConfirmation) {
+			setNotice(S.registerConfirmEmail);
+		}
+		setSigningIn(false);
+	};
+
+	const toggleMode = () => {
+		setMode((current) => (current === 'login' ? 'register' : 'login'));
+		setError(null);
+		setNotice(null);
+	};
+
+	return (
+		<div className="relative flex min-h-screen items-center justify-center bg-[#0B1120] p-4 overflow-hidden">
+			<div className="pointer-events-none absolute -top-40 left-1/4 h-[400px] w-[400px] rounded-full bg-blue-600/15 blur-[120px]"></div>
+			<div className="pointer-events-none absolute bottom-10 right-1/4 h-[350px] w-[350px] rounded-full bg-cyan-500/10 blur-[100px]"></div>
+
+			<div className="relative z-10 w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/60 p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-xl text-white animate-fade-in-down">
+				<div className="mb-8 flex flex-col items-center text-center gap-2">
+					<img
+						src="/logotipESINSA_R-1-white.png"
+						alt="ESINSA"
+						className="h-11 w-auto object-contain drop-shadow-[0_0_15px_rgba(59,130,246,0.4)]"
+					/>
+					<h1 className="text-lg font-black text-white tracking-tight mt-1">{S.appName}</h1>
+					<p className="text-[11px] font-semibold uppercase tracking-wider text-blue-400">
+						{S.tagline}
+					</p>
+				</div>
+
+				{authMode === 'insforge' ? (
+					mode === 'login' ? (
+						<>
+							<h2 className="text-2xl font-extrabold text-white">{S.loginTitle}</h2>
+							<p className="mb-6 mt-1 text-sm text-slate-400">{S.loginSubtitle}</p>
+
+							<form onSubmit={submit} className="space-y-4">
+								<div>
+									<label className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-400">
+										{S.loginEmail}
+									</label>
+									<input
+										type="email"
+										value={email}
+										onChange={(event) => setEmail(event.target.value)}
+										autoComplete="email"
+										required
+										className="w-full rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-900/40"
+									/>
+								</div>
+								<div>
+									<label className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-400">
+										{S.loginPassword}
+									</label>
+									<input
+										type="password"
+										value={password}
+										onChange={(event) => setPassword(event.target.value)}
+										autoComplete="current-password"
+										required
+										className="w-full rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-900/40"
+									/>
+								</div>
+								{error && (
+									<p className="rounded-lg bg-red-950/50 border border-red-900/50 px-3 py-2 text-sm text-red-400">
+										{error}
+									</p>
+								)}
+								<button
+									type="submit"
+									disabled={signingIn}
+									className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 font-bold text-white shadow-lg shadow-blue-500/25 transition hover:bg-blue-500 disabled:opacity-50 cursor-pointer"
+								>
+									{signingIn ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
+									{S.loginButton}
+								</button>
+							</form>
+
+							{onSignInWithOAuth && oauthProviders.length > 0 && (
+								<div className="mt-4 space-y-2">
+									{oauthProviders.map((provider) => (
+										<button
+											key={provider}
+											type="button"
+											onClick={async () => {
+												setError(null);
+												const message = await onSignInWithOAuth(provider);
+												if (message) setError(message);
+											}}
+											className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 dark:border-slate-700 dark:bg-slate-800 dark:text-gray-200 dark:hover:bg-slate-700"
+										>
+											{S.oauthContinue(provider)}
+										</button>
+									))}
+								</div>
+							)}
+						</>
+					) : (
+						<>
+							<h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">{S.registerTitle}</h2>
+							<p className="mb-6 mt-1 text-sm text-gray-500 dark:text-slate-400">{S.loginSubtitle}</p>
+
+							<form onSubmit={submitRegister} className="space-y-4">
+								<div>
+									<label className="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-slate-400">
+										{S.registerName}
+									</label>
+									<input
+										type="text"
+										value={name}
+										onChange={(event) => setName(event.target.value)}
+										autoComplete="name"
+										required
+										className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-indigo-900/40"
+									/>
+								</div>
+								<div>
+									<label className="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-slate-400">
+										{S.loginEmail}
+									</label>
+									<input
+										type="email"
+										value={email}
+										onChange={(event) => setEmail(event.target.value)}
+										autoComplete="email"
+										required
+										className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-indigo-900/40"
+									/>
+								</div>
+								<div>
+									<label className="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-slate-400">
+										{S.loginPassword}
+									</label>
+									<input
+										type="password"
+										value={password}
+										onChange={(event) => setPassword(event.target.value)}
+										autoComplete="new-password"
+										required
+										minLength={8}
+										className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-indigo-900/40"
+									/>
+								</div>
+								<div>
+									<label className="mb-1 block text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-slate-400">
+										{S.registerRole}
+									</label>
+									<select
+										value={roleId}
+										onChange={(event) => setRoleId(event.target.value)}
+										className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:ring-indigo-900/40"
+									>
+										{roles.map((role) => (
+											<option key={role.id} value={role.id}>
+												{roleLabel(role.id, roles)}
+											</option>
+										))}
+									</select>
+								</div>
+								{error && (
+									<p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
+										{error}
+									</p>
+								)}
+								{notice && (
+									<p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400">
+										{notice}
+									</p>
+								)}
+								<button
+									type="submit"
+									disabled={signingIn}
+									className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 py-3.5 font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50"
+								>
+									{signingIn ? <Loader2 size={18} className="animate-spin" /> : <ArrowRight size={18} />}
+									{S.registerButton}
+								</button>
+							</form>
+						</>
+					)
+				) : (
+					<>
+						<h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">{S.loginTitle}</h2>
+						<p className="mb-6 mt-1 text-sm text-gray-500 dark:text-slate-400">{S.loginSubtitle}</p>
+
+						<div className="mb-6 space-y-2">
+							{loading && (
+								<div className="flex items-center justify-center gap-2 py-6 text-sm text-gray-500 dark:text-slate-400">
+									<Loader2 size={16} className="animate-spin" />
+									{S.bootMessage}
+								</div>
+							)}
+
+							{!loading &&
+								list.map((op) => {
+									const isSelected = effectiveSelected === op.id;
+									return (
+										<button
+											key={op.id}
+											type="button"
+											onClick={() => setSelected(op.id)}
+											className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left transition ${
+												isSelected
+													? 'border-blue-500 bg-blue-950/60 ring-2 ring-blue-500/30 text-white'
+													: 'border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-800/80 text-slate-300'
+											}`}
+										>
+											<span className="text-sm font-bold text-white">
+												{String(op.name)}
+											</span>
+											<span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-blue-400 border border-slate-700">
+												{roleLabel(String(op.role), roles)}
+											</span>
+										</button>
+									);
+								})}
+						</div>
+
+						<button
+							type="button"
+							onClick={confirm}
+							disabled={!effectiveSelected}
+							className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3.5 font-bold text-white shadow-lg shadow-blue-500/25 transition hover:bg-blue-500 disabled:opacity-50 cursor-pointer"
+						>
+							{S.startShift}
+							<ArrowRight size={18} />
+						</button>
+					</>
+				)}
+
+				{authMode === 'insforge' && (
+					<button
+						type="button"
+						onClick={toggleMode}
+						className="mt-5 block w-full text-center text-xs font-semibold text-blue-400 hover:text-blue-300"
+					>
+						{mode === 'login' ? S.registerPrompt : S.loginPrompt}
+					</button>
+				)}
+
+				<p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[11px] text-gray-400 dark:text-slate-500">
+					<ShieldCheck size={14} />
+					{authMode === 'insforge' ? S.authByInsForge : S.loginDemo}
+				</p>
+			</div>
+		</div>
+	);
+}

@@ -1,0 +1,8 @@
+code;name;role;status
+OP-1001;Martín Ruiz (Admin);admin;Activo
+OP-1002;Valentina Díaz (Jefa Almacén);manager;Activo
+OP-1003;Santiago López (Picking Riu Clar);picker;Activo
+OP-1004;Camila Torres (Taller Corte);picker;Activo
+OP-1005;Lucía Fernández (Formadora);formador;Activo
+OP-1006;Prácticas Novatecnica 1;practicas;Activo
+OP-1007;Prácticas Novatecnica 2;practicas;Activo

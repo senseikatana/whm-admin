@@ -1,0 +1,94 @@
+---
+/**
+ * ThemeToggle — Botón flotante de cambio de tema (claro/oscuro).
+ *
+ * Implementación nativa que respeta `prefers-color-scheme` por defecto.
+ * Nota: no se importa katanakit-js aquí porque su servicio de temas arrastra
+ * `node:async_hooks`/`node:crypto` al bundle del navegador, lo que rompe el módulo
+ * en tiempo de ejecución. Se replica la misma API conceptual (init + toggle).
+ */
+---
+
+<button
+	id="theme-toggle"
+	type="button"
+	aria-label="Cambiar tema claro/oscuro"
+	title="Cambiar tema claro/oscuro"
+	class="fixed bottom-5 right-5 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white/80 text-slate-700 shadow-lg backdrop-blur-xl transition-all hover:scale-110 hover:bg-white dark:border-slate-700 dark:bg-slate-900/80 dark:text-amber-300 dark:shadow-blue-500/10 dark:hover:bg-slate-800 cursor-pointer"
+>
+	<!-- Icono Luna: se muestra en modo claro (para pasar a oscuro) -->
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="20"
+		height="20"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		class="dark:hidden"
+	>
+		<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+	</svg>
+
+	<!-- Icono Sol: se muestra en modo oscuro (para pasar a claro) -->
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="20"
+		height="20"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		class="hidden dark:block"
+	>
+		<circle cx="12" cy="12" r="4" />
+		<path d="M12 2v2" /><path d="M12 20v2" />
+		<path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" />
+		<path d="M2 12h2" /><path d="M20 12h2" />
+		<path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" />
+	</svg>
+</button>
+
+<script>
+	const THEME_KEY = 'esinsa-theme';
+
+	function systemPrefersDark() {
+		return window.matchMedia('(prefers-color-scheme: dark)').matches;
+	}
+
+	function resolveMode(mode: string): string {
+		return mode === 'system' ? (systemPrefersDark() ? 'dark' : 'light') : mode;
+	}
+
+	function applyMode(mode: string): void {
+		const resolved = resolveMode(mode);
+		const root = document.documentElement;
+		root.classList.remove('light', 'dark');
+		root.classList.add(resolved);
+		root.setAttribute('data-theme', resolved);
+		root.style.colorScheme = resolved;
+	}
+
+	// Inicializa respetando la preferencia del sistema si no hay elección guardada.
+	const stored = localStorage.getItem(THEME_KEY);
+	const currentMode = stored === 'light' || stored === 'dark' ? stored : 'system';
+	applyMode(currentMode);
+
+	// Mantiene el tema sincronizado si el sistema operativo cambia y estamos en "system".
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+		const saved = localStorage.getItem(THEME_KEY);
+		if (!saved || saved === 'system') applyMode('system');
+	});
+
+	const button = document.getElementById('theme-toggle');
+	button?.addEventListener('click', () => {
+		const isDark = document.documentElement.classList.contains('dark');
+		const next = isDark ? 'light' : 'dark';
+		localStorage.setItem(THEME_KEY, next);
+		applyMode(next);
+	});
+</script>

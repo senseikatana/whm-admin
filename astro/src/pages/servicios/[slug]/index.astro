@@ -1,0 +1,146 @@
+---
+import PublicLayout from '../../../layouts/PublicLayout.astro';
+
+export function getStaticPaths() {
+	const services = [
+		{
+			slug: 'quality-service',
+			title: 'Quality Service e Ingeniería Aplicada',
+			subtitle: 'Asesoramiento técnico especializado para uniones bridadas críticas',
+			description: 'El servicio exclusivo de Quality Service de ESINSA consiste en una asistencia técnica integral destinada a eliminar fallos, fugas y emisiones fugitivas en uniones bridadas de plantas industriales.',
+			benefits: [
+				'Auditoría y diagnóstico de problemas de estanqueidad previos',
+				'Selección de junta y tornillería idóneas según fluido, temperatura y presión',
+				'Cumplimiento con directivas medioambientales y normas de emisiones (IPPC / TA-Luft)',
+			],
+			procedure: 'Nuestros ingenieros analizan las condiciones operativas de la planta y emiten recomendaciones vinculantes acompañadas de protocolos de montaje y apriete.',
+		},
+		{
+			slug: 'calculo-pares-apriete',
+			title: 'Cálculo de Pares de Apriete',
+			subtitle: 'Protocolos de tensión y torque según norma ASME PCC-1',
+			description: 'Un par de apriete incorrecto es la principal causa de fuga en bridas. Determinamos la carga de apriete idónea que garantice el sellado sin sobrepasar la resistencia elástica del espárrago ni aplastar el relleno de la junta.',
+			benefits: [
+				'Cálculo riguroso según directrices ASME PCC-1 y EN 1591',
+				'Tablas de apriete personalizadas por diámetro y presión nominal (PN / Libras)',
+				'Especificación de lubricantes adecuados y coeficiente de fricción',
+			],
+			procedure: 'Entregamos hojas de apriete por equipo con pasos de precarga (30%, 60%, 100%) y secuencia en estrella para el personal de mantenimiento.',
+		},
+		{
+			slug: 'verificacion-montajes',
+			title: 'Verificación de Montajes de Juntas',
+			subtitle: 'Control in-situ y supervisión técnica en paradas de planta',
+			description: 'Acompañamos a las brigadas de montaje durante paradas programadas para verificar el correcto estado de las caras de brida, la concentricidad y el procedimiento de apriete.',
+			benefits: [
+				'Inspección de rugosidad y alineación de bridas antes del montaje',
+				'Verificación de torque aplicado con llaves dinamométricas calibradas',
+				'Emisión de certificado de conformidad de la unión bridada',
+			],
+			procedure: 'Supervisión presencial por técnicos cualificados en las plantas del Polo Químico de Tarragona.',
+		},
+		{
+			slug: 'corte-chorro-agua',
+			title: 'Corte por Chorro de Agua (Waterjet)',
+			subtitle: 'Corte en frío sin deformación térmica para juntas a medida',
+			description: 'Mecanizado por chorro de agua a ultra-alta presión con abrasivo para cortar juntas planas sobre cualquier material según plano o muestra física en tiempo récord.',
+			benefits: [
+				'Sin alteración química ni estructural de las materias primas',
+				'Apto para Inconel, Inox 316L, Titanio, grafito armado, PTFE y elastómeros',
+				'Corte inmediato en menos de 24 horas para urgencias de planta',
+			],
+			procedure: 'Recepción de planos en formato CAD/DXF o escaneo de junta usada para corte en nuestras máquinas del Polígono Riu Clar.',
+		},
+		{
+			slug: 'plegado-cnc',
+			title: 'Plegado CNC de Materiales',
+			subtitle: 'Conformado de precisión para elementos auxiliares industriales',
+			description: 'Plegado de chapas metálicas de acero al carbono, acero inoxidable y aleaciones para fabricación de carcasas, abrazaderas, soportes de instrumentación y piezas a medida.',
+			benefits: [
+				'Plegadora con control numérico CNC de alta repetibilidad',
+				'Capacidad para espesores de hasta 3 mm',
+				'Fabricación ágil de prototipos y series medias',
+			],
+			procedure: 'Diseño conjunto con el cliente y producción en taller central de Riu Clar.',
+		},
+		{
+			slug: 'entregas-programadas',
+			title: 'Gestión y Entrega Programada',
+			subtitle: 'Logística sincronizada para paradas de planta y mantenimientos',
+			description: 'Acuerdos de entrega garantizada y consignación de stock estratégico para evitar paradas no planificadas en refinerías y plantas petroquímicas.',
+			benefits: [
+				'Kits de juntas y espárragos identificados por equipo/tag',
+				'Servicio de guardia 24/7 para emergencias críticas',
+				'Integración directa con el sistema SGA y códigos NUT',
+			],
+			procedure: 'Planificación conjunta previa a la parada y reparto diario desde nuestro almacén en Riu Clar.',
+		},
+	];
+
+	return services.map((s) => ({
+		params: { slug: s.slug },
+		props: { service: s },
+	}));
+}
+
+const { service } = Astro.props;
+---
+
+<PublicLayout title={`${service.title} — ESINSA Riu Clar (Tarragona)`}>
+	<div class="bg-gradient-to-b from-[#0F172A] to-[#0B1120] py-10 text-white border-b border-slate-800">
+		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+			<a href="/servicios" class="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors mb-2 inline-block">
+				← Volver a servicios
+			</a>
+			<span class="block text-xs font-bold uppercase tracking-wider text-slate-400 mt-1">Servicio Técnico Especializado</span>
+			<h1 class="text-2xl font-black sm:text-4xl mt-1 text-white">{service.title}</h1>
+			<p class="text-sm text-slate-300 mt-2 max-w-2xl">{service.subtitle}</p>
+		</div>
+	</div>
+
+	<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+			<div class="lg:col-span-2 space-y-8">
+				<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+					<h2 class="text-base font-bold text-slate-900 mb-3 dark:text-white">Descripción del Servicio</h2>
+					<p class="text-sm text-slate-600 leading-relaxed mb-6 dark:text-slate-300">
+						{service.description}
+					</p>
+
+					<h3 class="text-xs font-bold uppercase tracking-wider text-blue-600 mb-2 dark:text-blue-400">Metodología de Trabajo</h3>
+					<p class="text-xs text-slate-600 leading-relaxed dark:text-slate-300">
+						{service.procedure}
+					</p>
+				</div>
+
+				<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+					<h2 class="text-base font-bold text-slate-900 mb-3 dark:text-white">Ventajas y Beneficios</h2>
+					<ul class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+						{service.benefits.map((b: string) => (
+							<li class="flex items-center gap-2">
+								<span class="text-blue-600 font-bold dark:text-blue-400">✓</span>
+								<span>{b}</span>
+							</li>
+						))}
+					</ul>
+				</div>
+			</div>
+
+			<!-- Sidebar -->
+			<div class="space-y-6">
+				<div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900/70">
+					<h3 class="text-sm font-bold text-slate-900 mb-2 dark:text-white">Solicitar Asistencia Técnica</h3>
+					<p class="text-xs text-slate-500 mb-4 leading-relaxed dark:text-slate-400">
+						Consulte con nuestros ingenieros para coordinar un estudio técnico o asistencia en planta.
+					</p>
+					<a
+						href="/contacto"
+						class="block text-center rounded-lg bg-blue-600 py-2.5 text-xs font-bold text-white hover:bg-blue-500 transition-colors shadow-sm"
+					>
+						Contactar Oficina Técnica
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</PublicLayout>
